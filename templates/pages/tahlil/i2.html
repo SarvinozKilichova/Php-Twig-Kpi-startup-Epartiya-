@@ -1,0 +1,80 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form class="ui form" id="form_filter" method="POST">
+	<input type="hidden" name="function" value="setFilter">
+	<input type="hidden" name="page" id="page" value="{{ filter.page }}">
+        <div class="ui secondary stackable menu">
+            <div class="item">
+                <h4 class="ui header"> {{ kname }} Кенгашидаги БПТ сони ва уларнинг раислари ҳақида маълумот (2-илова)</h4>
+            </div>
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ begin_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ end_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+                        <i class="checkmark icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+   
+{% if (i2 != null) %}
+    <div class="dimmable">
+    <div class="ui inverted green menu">
+        <a class="item print desktop" data-print="i2"><i class="print icon"></i>Чоп қилиш</a>
+        <a class="item export" data-file="{{ kname }} Кенгашидаги БПТ сони ва уларнинг раислари ҳақида маълумот (2-илова)" data-export="i2"><i class="file excel outline icon"></i>Экспорт</a>
+    </div>      
+    <div class="wrapper">
+        <div class="sticky-table">
+        <table class="ui small blue celled table" id="i2">
+            <thead>
+                <tr class="center aligned">
+                    <th>№</th>
+    			    {% if role == 1 %}
+    			    	<th>Вилоят номи</th>
+    			    {% elseif role == 2 %}
+    			    	<th>Туман ва шаҳар номи</th>
+    			    {% elseif role == 3 %}
+    			    	<th>Туман ва шаҳар номи</th>
+    				{% endif %}
+                    <th>БПТ номи, тузилган вақти ва жойи</th>
+                    <th>БПТга бирлашган аъзолар сони</th>
+                    <th>БПТ раисининг Ф.И.О</th>
+                    <th>БПТ раисининг турар жойи, телефон рақами</th>
+                </tr>
+            </thead>    
+            <tbody>
+                {% for i2 in i2 %}
+                <tr class="center aligned">
+                    <td>{{ (filter.page - 1) * filter.limit + loop.index }}</td>
+                    <td>{{ i2.kname }}</td>
+                    <td>{{ i2.bptname }}</td>
+                    <td class="azolarcount">{{ i2.azolar_count }}</td>
+                    <td>{{ i2.bpt_rais }}</td>
+                    <td>{{ i2.bpt_rais_yajm }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="ui segment">
+         	{% include "pagination.html" %}
+        </div>
+    </div>
+</div>
+</form>
+{% else %}
+    {% include "empty.html" %}
+{% endif %}
+{% include "footer.html" %}

@@ -1,0 +1,10 @@
+<?php
+
+class Application_Models_User extends Application_Lib_Varien_Object {
+
+    public function login($login, $password) {
+        $data = $this->getAdapter()->fetchAll('[CABINET_BANK_USER_LOGIN] ?, ?', array($login, $password));
+        return $data[0][0];
+    }
+
+}

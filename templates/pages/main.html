@@ -1,0 +1,138 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<div class="ui segments">
+		<div class="ui segment">
+			{% for message in message %}
+				<div class="ui 
+					{% if message.type == 1 %} info 
+					{% elseif message.type == 2 %} warning 
+					{% elseif message.type == 3 %} error
+					{% endif %}
+					message">
+					{% if message.type == 1 %} <i class="icon info"></i> 
+					{% elseif message.type == 2 %} <i class="icon exclamation triangle"></i>
+					{% elseif message.type == 3 %} <i class="icon exclamation"></i>
+					{% else %} <i class="icon envelope outline"></i>
+					{% endif %}
+			  		<i class="close icon"></i>
+			  		{{ message.text }}
+				</div>
+			{% endfor %}	<div class="ui blue segment">
+		    	<h3>{{ kname }} Кенгаши</h3>
+		    </div>
+			<div class="ui stackable grid">
+			  	<div class="four wide column"> 
+			  	{% if role == 1 %}
+					<div class="ui fluid  large vertical menu general">
+					    <a class="item" href="/settings">
+					    	Умумий вилоят Кенгашлари рўйхати
+					    	<div class="ui blue label">{{ newcount.countregken }}</div>
+					  	</a>
+					  	<a class="item" href="/settings">
+					    	Умумий туман Кенгашлари рўйхати
+					    	<div class="ui blue label">{{ newcount.countdisken}}</div>
+					  	</a>
+					</div>		
+					{% endif %}	  	
+				    <div class="ui fluid large vertical menu">
+					    <a class="item" href="/azolar">
+					    	Аъзолар рўйхати
+					    	{% if role == 1 and newcount.countnewazo > 0 %}	
+					    	<div class="ui red label">{{ "+"~newcount.countnewazo }}</div>
+					    	{% endif %}		
+					    	<div class="ui blue label">{{ count.countazolar }}</div>	    	
+					  	</a>
+					  	<a class="item" href="/bpt">
+					    	БПТ рўйхати
+					    	{% if role == 1 and newcount.countnewbpt > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewbpt }}</div>
+					    	{% endif %}
+					    	<div class="ui blue label">{{ count.countbpt }}</div>
+					    </a>
+					  	 <a class="item" href="/ilova/i12">
+					    	Кенгаш аъзолар рўйхати
+					    	{% if role == 1 and newcount.countnewkentar > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewkentar }}</div>
+					    	{% endif %}
+					    	<div class="ui blue label">{{ count.countkentar }}</div>
+					  	</a>
+					  	<!--<a class="item" href="/ilova/i13">
+					    	Кенгаш Ижроия Қўмитаси аъзолар рўйхати
+					    	{% if role == 1 and newcount.countnewkeniq > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewkeniq }}</div>
+					    	{% endif %}					    	
+					    	<div class="ui blue label">{{ count.countkeniq }}</div>
+					  	</a>
+					  	<a class="item" href="/ilova/i14">
+					    	Кенгаш "Аёллар қаноти" аъзолар рўйхати
+					    	{% if role == 1 and newcount.countnewkenaqt > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewkenaqt }}</div>
+					    	{% endif %}						    	
+					    	<div class="ui blue label">{{ count.countkenaqt }}</div>
+					  	</a>
+					  	<a class="item" href="/ilova/i15">
+					    	Кенгаш "Ёшллар қаноти" аъзолар рўйхати
+					    	{% if role == 1 and newcount.countnewkenyqt > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewkenyqt }}</div>
+					    	{% endif %}						    	
+					    	<div class="ui blue label">{{ count.countkenyqt }}</div>
+					  	</a>-->
+					</div>
+					<div class="ui fluid  large vertical menu">
+					    <a class="item" href="/azolar/del">
+					    	Аъзоликдан ўчирилганлар рўйхати
+					    	{% if role == 1 and newcount.countnewdelazo > 0 %}	
+					    	<div class="ui red label">{{ "+"~newcount.countnewdelazo }}</div>
+					    	{% endif %}					    	
+					    	<div class="ui blue label">{{ count.countdelazolar }}</div>
+					  	</a>
+					  	<a class="item" href="/bpt/del">
+					    	Тугатилган БПТ рўйхати
+					    	{% if role == 1 and newcount.countnewdelbpt > 0 %}
+					    	<div class="ui red label">{{ "+"~newcount.countnewdelbpt }}</div>
+					    	{% endif %}					    	
+					    	<div class="ui blue label">{{ count.countdelbpt }}</div>
+					  	</a>
+					</div>
+			  	</div>
+			  	<div class="{% if role == 3 %}twelve{% else %}eight{% endif %} wide column"> 
+					<div class="ui segment">
+						<div class="ui top attached label">
+		                    <p>Охирги 30 кунликдаги аьзолар ва БПТ сони</p> 
+		                </div>   
+						<div id="count_azolarbpt">
+                            <div class="ui active inverted dimmer">
+                                <div class="ui text loader">Маълумот юкланмоқда...</div>
+                            </div>						    
+						</div>
+					</div>
+			  	</div>
+			  	{% if role != 3 %}
+			  	<div class="four wide column"> 
+					<div class="ui segment" style="padding-top: 1em;">
+						<div class="ui top attached label">
+			                <p>Аьзоларнинг {% if role == 1 %} вилоятлар {% elseif role == 2 %} туманлар {% endif %} кесимидаги улуши</p> 
+			            </div>
+						<div id="percent_bydist">
+                            <div class="ui active inverted dimmer">
+                                <div class="ui text loader">Маълумот юкланмоқда...</div>
+                            </div>						    
+						</div>			
+					</div>
+			  	</div>
+			  	{% endif %}	  	
+			</div>
+		</div>
+		<div class="ui secondary segment">
+			<div class="ui two column middle aligned grid">
+				<div class="left floated left aligned eight wide column">
+					<span>2020 <b>EPartiya</b></span>
+				</div>
+				<div class="right floated right aligned four wide column">
+					<span>Қўллаб-қувватлаш <a href="https://t.me/tolmosxon" target="_blank">бу ерда</a></span>	
+				</div>
+			</div>
+		</div>
+	</div>
+{% include "footer.html" %}

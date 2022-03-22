@@ -1,0 +1,6 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+    <h1>Главная</h1>
+</div>
+{% include "footer.html" %}

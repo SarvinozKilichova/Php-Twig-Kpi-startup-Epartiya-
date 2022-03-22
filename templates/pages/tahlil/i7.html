@@ -1,0 +1,157 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form class="ui form" method="post" id="form-register">
+        <div class="ui secondary stackable menu">
+            <div class="item">
+                <h4 class="ui header"> {{ kname }} Кенгашида хотин-қиз аъзоларнинг ижтимоий таркиби (7-илова)</h4>
+            </div>
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ begin_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ end_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+                        <i class="checkmark icon"></i>
+                    </button>
+                </div>                
+            </div>
+        </div>
+    </form>
+{% if (i7 != '') %}
+    <div class="ui inverted green menu">
+        <a class="item print desktop" data-print="i7"><i class="print icon"></i>Чоп қилиш</a>
+        <a class="item export" data-file="{{ kname }} Кенгашида хотин-қиз аъзоларнинг ижтимоий таркиби (7-илова)" data-export="i7"><i class="file excel outline icon"></i>Экспорт</a>
+         <a class="item diagram" data-number="3"><i class="signal icon"></i>Диаграма</a>
+    </div>      
+    <div class="wrapper">
+        <table class="ui small blue celled structured table" id="i7">
+            <thead>
+                <tr class="center aligned">
+                    <th rowspan="3">№</th>
+				    {% if role == 1 %}
+				    	<th rowspan="3">Вилоят номи</th>
+				    {% elseif role == 2 %}
+				    	<th rowspan="3">Туман ва шаҳар номи</th>
+				    {% elseif role == 3 %}
+				    	<th rowspan="3">БПТ номи</th>
+					{% endif %} 
+                    <th rowspan="3">Партия аъзолари сони</th>
+                    <th rowspan="3">Хотин-қиз аъзолар сони</th>
+                    <th colspan="16">Жумладан, партия хотин-қиз аъзоларининг ижтимоий таркиби</th>
+                </tr>
+                <tr class="center aligned">
+                    <th colspan="3">Маълумоти</th>
+                    <th colspan="5">Мутахасислиги</th>
+                    <th colspan="8">Менат фаолияти соҳаси</th>
+                </tr>
+                <tr class="center aligned">
+                    <th class="1h">Умумий ўрта</th>
+                    <th class="1h">Ўрта-махсус</th>
+                    <th class="1h">Олий</th>
+
+                    <th class="2h">Педагог</th>
+                    <th class="2h">Ҳуқуқшуност</th>
+                    <th class="2h">Шифокор</th>
+                    <th class="2h">Иқтисодчи</th>
+                    <th class="2h">Бошқа мутахассислик</th>
+                    
+                    <th class="3h">Тадбиркор</th>
+                    <th class="3h">Талаба</th>
+                    <th class="3h">Соғлиқни сақлаш соҳаси вакиллари</th>
+                    <th class="3h">Таълим ва фан соҳаси вакиллари</th>
+                    <th class="3h">Қишлоқ хўжалиги соғаси вакиллари</th>
+                    <th class="3h">Ишлаб чиқариш соҳаси</th>
+                    <th class="3h">Бошқа соҳа вакиллари</th>
+                    <th class="3h">Вақтинча ишсизлар</th>
+
+                </tr>
+            </thead>    
+            <tbody>
+                {% for i7 in i7 %}
+                <tr class="center aligned">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ i7.kname }}</td>
+                    <td>{{ i7.count_azolar }}</td>
+                    <td>{{ i7.miss }}</td>
+                    <td>{{ i7.uu }}</td>
+                    <td>{{ i7.um }}</td>
+                    <td>{{ i7.bm }}</td>
+                    <td>{{ i7.ped }}</td>
+                    <td>{{ i7.huq }}</td>
+                    <td>{{ i7.shif }}</td>
+                    <td>{{ i7.iqt }}</td>
+                    <td>{{ i7.other_mu }}</td>
+                    <td>{{ i7.tad }}</td>
+                    <td>{{ i7.tlb }}</td>
+                    <td>{{ i7.sog }}</td>
+                    <td>{{ i7.tal }}</td>
+                    <td>{{ i7.qish }}</td>
+                    <td>{{ i7.ishch }}</td>
+                    <td>{{ i7.other_fs }}</td>
+                    <td>{{ i7.isz }}</td>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="center aligned">
+                    <th>Жами:</th>
+                    <th></th>
+                    <th>{{ total["count_azolar"] }}</th>
+                    <th>{{ total["miss"] }}</th>
+					<th class="1d">{{ total["uu"] }}</th>
+                    <th class="1d">{{ total["um"] }}</th>
+                    <th class="1d">{{ total["bm"] }}</th>
+                    <th class="2d">{{ total["ped"] }}</th>
+                    <th class="2d">{{ total["huq"] }}</th>
+                    <th class="2d">{{ total["shif"] }}</th>
+                    <th class="2d">{{ total["iqt"] }}</th>
+                    <th class="2d">{{ total["other_mu"] }}</th>
+                    <th class="3d">{{ total["tad"] }}</th>
+                    <th class="3d">{{ total["tlb"] }}</th>
+                    <th class="3d">{{ total["sog"] }}</th>
+                    <th class="3d">{{ total["tal"] }}</th>
+                    <th class="3d">{{ total["qish"] }}</th>
+                    <th class="3d">{{ total["ishch"] }}</th>
+                    <th class="3d">{{ total["other_fs"] }}</th>
+                    <th class="3d">{{ total["isz"] }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% else %}
+    	{% include "empty.html" %}
+    {% endif %}
+</div>
+<div class="ui small modal" id="diagram-info" style="text-align: center;">
+    <i class="red close icon"></i>
+    <div class="header">Кенгашда хотин-қиз аъзоларнинг ижтимоий таркиби (фоизларда)</div>
+        <div class="content">
+            <div class="ui top attached tabular menu">
+                <a class="active item" data-tab="first">Маълумот даражаси</a>
+                <a class="item" data-tab="second">Мутахассислиги</a>
+                <a class="item" data-tab="third">Фаолият соҳаси</a>
+            </div>
+            <div class="ui bottom attached active tab segment" data-tab="first">
+                <div id="diagram1" style="display: inline-block;"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="second">
+                <div id="diagram2" style="display: inline-block;"></div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="third">
+                <div id="diagram3" style="display: inline-block;"></div>
+            </div>
+        </div>
+</div> 
+{% include "footer.html" %}
+

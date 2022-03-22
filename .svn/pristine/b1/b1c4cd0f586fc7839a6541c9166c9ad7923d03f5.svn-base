@@ -1,0 +1,66 @@
+$(function() {
+
+	$('.button.add').click(function () {
+    	$('#service-add').modal('show');
+    });
+
+    $('#form-service-add').form({
+        fields: {
+            phone_number: ['empty', 'number', 'exactLength[9]', 'phone_number']
+        }
+    });
+    $('#form-service-add').ajaxForm({
+    	resetForm: true,
+        success: function(result) {
+            if (result.success) {
+                alertify.success(result.success);
+                window.location.reload(true);
+            }
+        }
+    });
+    $('#service-add').modal({
+        observeChanges: true,
+        duration: 100,
+        onApprove: function() {
+            $('#form-service-add').submit();
+            return false;
+        },
+        onDeny: function() {
+            window.location.reload(true);
+        }
+    });
+
+    /* Изменить данные сервис */
+    $('#form-service-update').form({
+        fields: {
+            phone_number: ['empty', 'number', 'exactLength[9]', 'phone_number']
+        }
+    });
+    $('#form-service-update').ajaxForm({
+        success: function(result) {
+            if (result.success) {
+                alertify.success(result.success);
+                window.location.reload(true);
+            }
+        }
+    });
+    $('#service-update').modal({
+        observeChanges: true,
+        duration: 100,
+        onApprove: function() {
+            $('#form-service-update').submit();
+            return false;
+        },
+        onDeny: function() {
+            window.location.reload(true);
+        }
+    });
+    $('.button.edit').click(function () {
+        $('#form-service-update').find('input[name="service_id"]').val($(this).data('service-id'));
+        $('#form-service-update').find('input[name="service_phone_number"]').val($(this).data('phone-number'));
+        $('#service-update').modal('show');
+    });
+
+
+    
+});

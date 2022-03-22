@@ -1,0 +1,11 @@
+{% include "header.html" %}
+	<div style="margin: 0 auto; padding-top: 70px; width: 95%; max-width: 500px; text-align: center;">
+	    <i class="yellow huge bomb alternate icon"></i>
+	    <h2 class="ui header">У вас нет доступа!</h2>
+
+	    <a class="ui yellow left labeled icon button" href="{{ sys.referer }}">
+	        <i class="taxi icon"></i>
+	        Вернутся туда откуда пришли
+	    </a>
+	</div>
+{% include "footer.html" %}

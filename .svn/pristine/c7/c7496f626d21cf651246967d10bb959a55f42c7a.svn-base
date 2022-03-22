@@ -1,0 +1,50 @@
+[db]
+host = 172.16.10.1
+dbname = Clickdb1
+user = bank_cabinet_user
+password = k*hN7d03ck$N9
+dsn = "dblib:host=%s;dbname=%s;"
+driver = Mssql
+
+[db.dev]
+host = 172.16.10.1
+dbname = Clickdb1
+user = bank_cabinet_user
+password = k*hN7d03ck$N9
+dsn = "dblib:host=%s;dbname=%s;"
+driver = Mssql
+
+[app]
+default_controller = index
+default_action = index
+default_language = ru
+templates = templates
+templates_cache = var/cache
+log = var/log.txt
+
+[routes]
+index = Index
+login = Login
+utils = Utils
+register = Register
+merchants = Merchants
+services = Services
+
+[templates]
+error = error/error.html
+404 = error/404.html
+index = pages/main.html
+login = pages/login.html
+utils = pages/utils.html
+merchants = pages/merchants/index.html
+merchants_register = pages/merchants/register.html
+services = pages/services/index.html
+
+[defaults]
+date_format = Y-m-d
+media = /media
+css = /media/css
+images = /media/images
+js = /media/js
+plugins = /media/plugins
+semantic = /media/semantic

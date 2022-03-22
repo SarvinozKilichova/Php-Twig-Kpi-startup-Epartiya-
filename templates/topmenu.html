@@ -1,0 +1,115 @@
+
+<div id="loader-wrapper">
+	<div id="loader"></div>
+	<div class="loader-section section-left" stype="opacity: 0.5;"></div>
+	    <div class="loader-section section-right" stype="opacity: 0.5;"></div>
+</div>
+
+<div class="ui left vertical inverted sidebar menu">
+    <div class="logo item">
+        <a class="ui logo icon image" href="/">
+            <img src="{{ defaults.images }}/logo_main.png" style="width: 150px;">
+        </a>
+    </div>
+    <a class="item {% if sys.page == 'index' %} active {% endif %}" href="/">
+        <i class="home icon"></i><span>Бош саҳифа</span>
+    </a>
+    <a class="item {% if sys.page == 'azolar' and sys.action == 'index' %} active {% endif %}" href="/azolar">
+        <i class="users icon"></i><span>Аъзолар рўйхати</span>
+    </a>
+    <a class="item {% if sys.page == 'bpt' and sys.action == 'index' %} active {% endif %}" href="/bpt">
+        <i class="building icon"></i><span>БПТ рўйхати</span>
+    </a>
+    <a class="item">
+    	<i class="bar chart icon"></i>
+    	<div class="header">Таҳлил</div>
+		<div class="menu">
+			<a class="item" href="/ilova/i1">1-Илова</a>
+			<a class="item" href="/ilova/i2">2-Илова</a>
+			<a class="item" href="/ilova/i3">3-Илова</a>
+			<a class="item" href="/ilova/i4">4-Илова</a>
+			<a class="item" href="/ilova/i5">5-Илова</a>
+			<a class="item" href="/ilova/i6">6-Илова</a>
+			<a class="item" href="/ilova/i7">7-Илова</a>
+			<a class="item" href="/ilova/i8">8-Илова</a>
+			<a class="item" href="/ilova/i9">9-Илова</a>
+			<a class="item" href="/ilova/i10">10-Илова</a>
+			<a class="item" href="/ilova/i11">11-Илова</a>
+			<a class="item" href="/ilova/i12">12-Илова</a>
+			<a class="item" href="/ilova/i13">13-Илова</a>
+			<a class="item" href="/ilova/i14">14-Илова</a>
+			<a class="item" href="/ilova/i15">15-Илова</a>
+			<a class="item" href="/ilova/i18">18-Илова</a>
+		</div>
+    </a>
+
+</div>
+<div class="pusher">
+    <div class="ui fixed inverted blue top menu">
+        <a class="toc item">
+            <i class="sidebar icon"></i>
+        </a>
+        <a class="toc item" href="/">
+            <img src="{{ defaults.images }}/logo_main.png" style="width: 20px;">
+        </a>        
+        <a class="item desktop" href="/">
+            <img src="{{ defaults.images }}/logo_main.png">
+        </A>
+        <a class="{% if sys.page == 'index' %} active {% endif %} item desktop" href="/">
+            <i class="home icon"></i><span>Бош саҳифа</span>
+        </a>
+        <a class="{% if sys.page == 'azolar' and sys.action == 'index' %} active {% endif %} item desktop" href="/azolar">
+            <i class="users icon"></i><span>Аъзолар рўйхати</span>
+        </a>
+        <a class="{% if sys.page == 'bpt' and sys.action == 'index' %} active {% endif %} item desktop" href="/bpt">
+            <i class="building icon"></i><span>БПТ рўйхати</span>
+        </a>
+        <div class="ui dropdown item desktop">
+            <i class="bar chart icon"></i>Таҳлил<i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="{% if sys.action == 'i1' %} active {% endif %} item" href="/ilova/i1">1-Илова</a>
+                <a class="{% if sys.action == 'i2' %} active {% endif %} item" href="/ilova/i2">2-Илова</a>
+                <a class="{% if sys.action == 'i3' %} active {% endif %} item" href="/ilova/i3">3-Илова</a>
+                <a class="{% if sys.action == 'i4' %} active {% endif %} item" href="/ilova/i4">4-Илова</a>
+                <a class="{% if sys.action == 'i5' %} active {% endif %} item" href="/ilova/i5">5-Илова</a>
+                <a class="{% if sys.action == 'i6' %} active {% endif %} item" href="/ilova/i6">6-Илова</a>
+                <a class="{% if sys.action == 'i7' %} active {% endif %} item" href="/ilova/i7">7-Илова</a>
+                <a class="{% if sys.action == 'i8' %} active {% endif %} item" href="/ilova/i8">8-Илова</a>
+                <a class="{% if sys.action == 'i9' %} active {% endif %} item" href="/ilova/i9">9-Илова</a>
+                <a class="{% if sys.action == 'i10' %} active {% endif %} item" href="/ilova/i10">10-Илова</a>
+                <a class="{% if sys.action == 'i11' %} active {% endif %} item" href="/ilova/i11">11-Илова</a>
+                <a class="{% if sys.action == 'i12' %} active {% endif %} item" href="/ilova/i12">12-Илова</a>
+                <a class="{% if sys.action == 'i13' %} active {% endif %} item" href="/ilova/i13">13-Илова</a>
+                <a class="{% if sys.action == 'i14' %} active {% endif %} item" href="/ilova/i14">14-Илова</a>
+                <a class="{% if sys.action == 'i15' %} active {% endif %} item" href="/ilova/i15">15-Илова</a>
+                <a class="{% if sys.action == 'i18' %} active {% endif %} item" href="/ilova/i18">18-Илова</a>
+            </div>
+        </div>
+        <div class="right menu">      
+         	<a href="/settings" class="{% if sys.page == 'settings' %} active {% endif %} item">
+                <i class="cogs icon"></i>
+            </a>
+            <a class="item" id="logout">
+                <i class="sign out icon"></i><span>Чиқиш</span>
+            </a>
+        </div>
+    </div>
+    <div class="ui inverted small modals page transition hidden">
+        <div class="ui small modal transition hidden logout">
+            <i class="red close icon"></i>
+            <div class="header">
+                Чиқиш
+            </div>
+            <div class="content">
+                <p>Сиз ҳақиқатдан ҳам чиқишни ҳоҳлайсизми ?</p>
+            </div>
+            <div class="actions">
+                <div class="ui negative button">
+                    Йўқ
+                </div>
+                <div class="ui positive right labeled icon button">
+                    Ҳа<i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,16 @@
+body {
+  background-color: #DADADA;
+}
+body > .grid {
+  height: 100%;
+}
+.column {
+  max-width: 450px;
+}
+img.logo {
+	margin-bottom: 30px !important;
+}
+
+.sub.header, label, .field.save_login {
+	text-align:left;
+}

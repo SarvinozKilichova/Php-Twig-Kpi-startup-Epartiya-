@@ -1,0 +1,150 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form id="form_filter" method="POST">
+		<input type="hidden" name="function" value="setFilter">
+		<input type="hidden" name="page" id="page" value="{{ filter.page }}">
+	    <div class="ui secondary stackable menu">
+	        <div class="item">
+	            <h4 class="ui header azolar">{{ kname }} Кенгаши аъзоликдан ўчирилганлар рўйхати</h>
+	            <div class="results"></div>
+	        </div>
+        {% if role == 2 %}
+        <div class="right menu">
+            <div class="item">
+                <label>Кенгаш</label>
+            </div>
+            <div class="item">
+            	<div class="ui input focus">
+                    <div class="ui selection dropdown" id="dis">
+                        <input name="dis" type="hidden" value="{{ filter.tcode }}">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Кенгашни танланг</div>
+                        <div class="menu">
+                            <div class="item" data-value="0">Барчаси</div> 
+                            <div class="divider"></div>  
+                            {% for dis in dis %}
+                                <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>       
+                </div>        
+            </div>
+        </div>
+        {% endif %}
+
+        {% if role == 1 %}
+        <div class="right menu">
+            <div class="item">
+                <label>Кенгаш</label>
+            </div>
+            <div class="item">
+	            <div class="ui input">
+		            <div class="ui selection dropdown" id="regions">
+		                <input type="hidden" name="regions" value="{{ filter.kcode }}">
+		                <i class="dropdown icon"></i>
+		                <div class="default text">Вилоятини танланг</div>
+		                <div class="menu">
+		                	<div class="item" data-value="0">Барчаси</div>
+		                    {% for regions in regions %}
+		                        <div class="item" data-value="{{ regions.code }}">{{ regions.name }}</div>
+		                   	{% endfor %}
+		                </div>
+		            </div>
+		        </div>    
+	        </div>
+        </div>
+        {% endif %}
+	    </div>
+	    <div class="ui inverted green menu">
+	        <a class="item print desktop" data-print="azolar_table"><i class="print icon"></i>Чоп қилиш</a>
+	        <a class="item export" data-file="Аъзоликдан ўчирилганолар рўйхати" data-export="azolar_table"><i class="file excel outline icon"></i>Экспорт</a>
+	        <div class="right item">
+	            <div class="ui icon input">
+	                <input placeholder="Излаш..." name="search" type="text" id="search" value="{{ filter.search != 'NULL' ? filter.search:'' }}"><i class="search icon"></i>
+	            </div>
+	        </div>
+	    </div>
+	    {% include "message.html" %}
+	    {% if (azolar != null) %}	    
+		    <div class="dimmable">
+		        <div class="ui inverted dimmer" id="azolar-loader">
+		            <div class="ui text inline loader">Маълумотлар қайта юкланмоқда илтимос кутинг...</div>
+		        </div>
+		        <table class="ui small blue celled table loading" id="azolar_table">
+		            <thead>
+		                <tr class="center aligned">
+		                    <th>№</th>
+		                    <th>Аъзоликдан ўчирилган санаси</th>
+		                    <th>Аъзоликдан ўчирилган сабаби</th>
+		                    <th>Ф.И.О</th>
+		                    <th>Туғулган йили ва жойи</th>
+		                    <th>Маълумоти ва мутахассислиги</th>
+		                    <th>Партия билет рақами</th>
+		                    <th>БПТ номи, БПТ кирган санаси</th>
+		                    <th>Иш жойи ва лавозими, иш телефон рақами</th>
+		                    <th>Турар жойи (телефон рақами)</th>
+		                    {% if role == 1 %}
+		                    <th>Бошқарув ускуналари</th> 
+		                    {% endif %}   
+		                </tr>
+		            </thead>
+		            <tbody>
+		            	{% for azolar in azolar %}
+		                <tr class="center aligned" id="{{ azolar.id }}">
+		                    <td>{{ loop.index }}</td>
+		                    <td>{{ azolar.audate }}</td>
+		                    <td>{{ azolar.iaureason }}</td>
+		                    <td>{{ azolar.fullname }}</td>
+		                    <td>{{ azolar.bornAddress }}</td>
+		                    <td>{{ azolar.edupro}}</td>
+		                    <td>{% if azolar.pnum=='' %} <div class="ui red basic label">Берилмаган</div> {% else %} {{ azolar.pnum}} {% endif %}</td>
+		                    <td>{{ azolar.bptasana }}</td>
+		                    <td>{{ azolar.job }}</td>
+		                    <td>{{ azolar.address }} </td>
+		                    {% if role == 1 %}
+		                    <td class="two wide">
+		                        <div 
+		                            data-fullname="{{ azolar.f_name~' '~azolar.m_name }}"
+		                            data-id="{{ azolar.id }}"                                           
+		                            class="ui compact icon button return"
+		                            data-tooltip="Аъзоликка тиклаш"
+		                            data-position="bottom right">
+		                            <i class="undo icon"></i>
+		                        </div>
+		                    </td>
+		                    {% endif %}
+		                </tr>
+		                {% endfor %}
+		            </tbody>
+		        </table>	        
+		        <div class="ui segment">
+		         	{% include "pagination.html" %}
+		        </div> 
+		    </div>
+	    {% else %}
+	    	{% include "empty.html" %}
+	    {% endif %}
+	</form> 
+</div>
+
+<div class="ui small modal" id="azolar-return">
+    <i class="red close icon"></i>
+    <div class="header">Диққат!</div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-return-azo">
+        	<input type="hidden" name="function" value="returnazo">
+        	<input type="hidden" name="id" id="azoid"> 		    
+			<p>Сиз ҳақиқатдан ҳам <span class="span"></span>ни ҳоҳлайсизми ?</p>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Йўқ</div>
+        <div class="ui positive right labeled icon button">Ха<i class="save icon"></i></div>
+    </div>    
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+
+{% include "footer.html" %}

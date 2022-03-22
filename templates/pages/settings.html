@@ -1,0 +1,856 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="ui padded equal height grid">
+	<div class="side menu" id="sideMenu">
+		<div class="ui fluid vertical tabs menu" id="verticalMenu">
+				{% if role == 1 %}
+		        <a class="item active" data-tab="users">
+		            <i class="users icon"></i> 
+		            <span>Фойдаланувчилар</span>
+		        </a>
+		        {% endif %}
+		        <a class="item {% if role == 2 or role == 3 %} active {% endif %}" data-tab="password">
+		            <i class="cog icon"></i>
+		            <span>Паролни ўзгартириш</span>
+		        </a>		        
+		        <a class="item" data-tab="dl">
+		            <i class="shield alternate icon"></i>
+		            <span>Тизимга икки босқичли киришни созлаш</span>
+		        </a>
+		        {% if role == 1 %}
+		        <a class="item" data-tab="regions">
+		            <i class="plus circle icon"></i>
+		            <span>Туман ва Шахарлар</span>
+		        </a>
+		        <a class="item" data-tab="message">
+		            <i class="envelope icon"></i>
+		            <span>Хабар юбориш</span>
+		        </a>
+		        {% endif %}	  
+		</div>
+	</div>
+
+	
+    <div class="stretched column" id="content">
+		{% if role == 1 %}
+		<div class="ui active tab" data-tab="users">
+	    	<div class="ui equal height grid">
+	    		<div class="stretched column">
+	            	<div class="sixteen wide column">
+		        		<div class="box">
+		               		<div class="ui segment main scroll">
+				                <h3 class="ui header">
+				                    <i class="users icon"></i>
+				                    Фойдаланувчилар
+				                </h3>
+				               	<form id="form_filter" method="POST">
+									<input type="hidden" name="function" value="setFilter">
+									<input type="hidden" name="page" id="page" value="{{ filter.page }}">
+									<div class="ui stackable inverted green menu">
+										<a class="item" id="addusers"><i class="add user icon"></i>Фойдаланувчи қўшиш</a>
+				                        <div class="right item">
+								            <div class="ui icon input">
+								                <input placeholder="Излаш..." name="search" type="text" id="search" value="{{ filter.search != 'NULL' ? filter.search:'' }}"><i class="search icon"></i>
+								            </div>
+								        </div>
+				                    </div>	
+				                    {% include "message.html" %}
+				                    {% if (users != null) %}
+					                  	<div class="dimmable">
+									        <div class="ui inverted dimmer" id="users-loader">
+									            <div class="ui text inline loader">Маълумотлар қайта юкланмоқда илтимос кутинг...</div>
+									    	</div>
+									    	<div class="sticky-table">
+						               		    <table class="ui small blue celled table loading" id="users_table">
+										            <thead>
+										                <tr class="center aligned">
+										                    <th>№</th>
+										                    <th>Кенгаш номи</th>
+										                    <th>Ҳолати</th>
+										                    <th>Мавофаққиятсиз киришлар сони</th>
+										                    <th>Икки босқичли кириш маълумотлари</th>
+										                    <th>Тизимга охирги кирган вақти</th>
+										                    <th>Бошқарув ускуналари</th>    
+										                </tr>
+										            </thead>
+										            <tbody>
+										            	{% for users in users %}
+										                <tr class="center aligned" id="{{ users.id }}">
+										                    <td>{{ (filter.page - 1) * filter.limit + loop.index }}</td>
+										                    <td>{{ users.kname }}</td>
+										                    <td>{% if users.status== 1 %} <i class="ui green check icon"> {% else %} <i class="ui red close icon"> {% endif %}</td>
+										                    <td>{{ users.incorrect }}</td>
+										                    <td>
+										                    	{% if users.dl == 0 %}  
+										                    		<div class="ui red basic label">Ёқилмаган</div> 
+										                    	{% elseif users.dl == 1 %}
+										                    		<i class="ui icon red mail"></i>
+										                    		{{ users.email }}
+										                    	{% elseif users.dl == 2 %} 
+										                    		<i class="ui icon blue telegram"></i>
+										                    		{{ users.telegramid }} 
+										                    	{% endif %}
+										                    </td>
+										                    
+										                    <td>{% if users.last_enter_datetime != "0000-00-00 00:00:00" %} {{ users.last_enter_datetime }} {% endif %}</td>
+										                    <td class="two wide">
+										                        <div
+										                            data-login="{{ users.login }}"
+										                            data-kname="{{ users.kname }}"
+										                            data-status="{% if users.status == 1 %} Фаол {% else %} Блокланган {% endif %}"
+										                            data-incorrect="{{ users.incorrect }}" 				                          
+										                            data-enter_datetime="{{ users.last_enter_datetime }}"
+										                            data-enter_ip="{{ users.ip }}"
+										                            data-agent="{{ users.agent }}"
+										                            data-update_datetime="{{ users.last_update_datetime }}"
+										                            data-update_ip="{{ users.last_update_ip }}"
+										                            data-dl='{% if users.dl == 0 %} 
+										                            			<div class="ui red basic label">Ёқилмаган</div> 
+										                    				 {% elseif users.dl == 1 %}
+										                    					<i class="ui icon red mail"></i> {{ users.email }}
+										                    				 {% elseif users.dl == 2 %} 
+										                    					<i class="ui icon blue telegram"></i> {{ users.telegramid }} 
+										                    				 {% endif %}'
+										                            class="ui compact icon button info"
+										                            data-tooltip="Фойдаланувчи маълумотлари" 
+										                            data-position="bottom right">
+										                            <i class="info icon"></i>
+										                        </div>
+										                        <div 
+										                        	data-kname="{{ users.kname }}"
+										                            data-id="{{ users.id }}"
+										                            data-ilogin="{{ users.login }}"                    
+										                            class="ui compact icon button edit"
+										                            data-tooltip="Фойдаланувчи маълумотларини таҳрирлаш"
+										                            data-position="bottom right">
+										                            <i class="write icon"></i>
+										                        </div>
+										                        <div 
+										                            data-kname="{{ users.kname~' '~users.tname }}"
+										                            data-id="{{ users.id }}"
+										                            class="ui compact icon button del"
+										                            data-tooltip="Фойдаланувчини ўчириш"
+										                            data-position="bottom right">
+										                            <i class="remove circle icon"></i>
+										                        </div>
+										                        <div 						                            
+										                            data-id="{{ users.id }}"
+										                            class="ui {% if users.status== 1 %} red {% else %} green {% endif %} compact icon button change_lock"
+										                            data-tooltip="ҳолатини ўзгартириш"
+										                            data-position="bottom right">
+										                            {% if users.status== 1 %} <i class="lock icon"></i> {% else %} <i class="unlock icon"></i> {% endif %}			   
+										                        </div>
+										                    </td>
+										                </tr>
+										                {% endfor %}
+										            </tbody>
+										        </table>
+									        </div>
+									        <div class="ui segment">
+									         	{% include "pagination.html" %}
+									        </div> 
+									    </div> 
+								    {% else %}
+								    	{% include "empty.html" %}
+								    {% endif %}								    
+							    </form>
+						    </div>
+					    </div>
+					</div> 
+				</div>
+	    	</div>
+		</div>
+		{% endif %}
+	    <div class="ui {% if role == 2 or role == 3 %} active {% endif %}tab" data-tab="password">
+	        <div class="ui equal height grid">
+	            <div class="sixteen wide column">
+				  	<div class="ui segment main">
+		           		<h3 class="ui header"><i class="cog icon"></i>Паролни ўзгартириш</h3>
+		                <div class="ui divider"></div>
+						<div class="ui segment edit password">
+							<div class="ui two column container stackable divided grid"> 
+								<div class="ten wide column">
+									<form class="ui form" method="post" id="form_edit_password">
+									    <input type="hidden" name="function" value="editpass">
+									    <div class="inline required fields">
+									        <div class="six wide field">
+									          <label>Жорий парол</label>
+									        </div>
+									        <div class="ten wide field">
+									            <div class="ui action input">
+									                <input placeholder="Жорий парол" type="password" class="input oldpass" name="oldpass" value="{{ security.oldpass }}">
+									                <div class="ui icon button password" data-name-input="oldpass">
+									                    <i class="eye icon oldpass"></i>
+									                </div>
+									            </div>
+									        </div>
+									    </div>
+									    <div class="inline required fields">
+									        <div class="six wide field">
+									          <label>Янги парол</label>
+									        </div>
+									        <div class="ten wide field">
+									            <div class="ui action input">
+									                <input placeholder="Янги парол" type="password" class="input newpass" name="newpass" value="{{ security.newpass }}">
+									                <div class="ui icon button password" data-name-input="newpass">
+									                    <i class="eye icon newpass"></i>
+									                </div>
+									            </div>
+									        </div>
+									    </div>
+									    <div class="inline required fields">
+									        <div class="six wide field">
+									          <label>Янги парол (Такрорий)</label>
+									        </div>
+									        <div class="ten wide field">
+									            <div class="ui action input">
+									                <input placeholder="Янги парол (Такрорий)" type="password" class="input repass" name="repass" value="{{ security.repass }}">
+									                <div class="ui icon button password" data-name-input="repass">
+									                    <i class="eye icon repass"></i>
+									                </div>
+									            </div>
+									        </div>
+									    </div>
+									    <div class="ui error message"></div>
+									    <div class="ui divider"></div>
+									    <div class="field">
+									    	<button class="ui right floated primary right labeled icon button save disabled" type="submit">
+									        	<i class="icon save"></i>Сақлаш
+									    	</button>
+									   	</div>
+									   	<div class="field"></div>
+									</form>
+								</div>
+					            <div class="six wide column">
+					                <p>
+					                <h4 class="ui header"><i class="info circle icon"></i>Маьлумот</h4>
+					                <div class="ui divider"></div>
+					                <ul class="ui list">
+					                    <li>Паролингизда рақамлар, ҳарфлар ва белгилар мавжудлигига ишонч ҳосил қилинг. Паролингиз осон бўлмаслигига харакат қилинг.</li>
+					                    <br>
+					                    <li>(<span class="red label">*</span>)белгиси қўйилган барча катаклар тўлдирилиши шарт.</li>
+					                </ul>
+					                </p>
+					            </div>
+					        </div>
+				        </div>
+			        </div>
+				</div>
+			</div>
+		</div>
+		<div class="ui tab" data-tab="dl">
+		    <div class="ui equal height grid">
+			    <div class="stretched column">
+		            <div class="sixteen wide column">
+		               	<div class="ui segment main">
+		               		<h3 class="ui header"><i class="shield alternate icon"></i>Тизимга икки босқичли кириш</h3>
+		                    <div class="ui divider"></div>
+		                    <div class="ui segment">
+		                    	<div class="ui two column container stackable divided grid">
+		                    		<div class="ten wide column">		                    		    
+		                    			<form class="ui form" method="POST" id="form_dl">
+											<input type="hidden" name="function" value="doubleAuth">
+											<div class="inline field">
+												<div class="ui toggle checkbox">
+													<input type="checkbox" tabindex="0"  value="1" {% if (settings.dl > 0 ) %} checked="true" {% endif %} name="dl" class="hidden">
+													<label>Икки босқичли кириш</label>
+												</div>
+											</div>
+										    <div class="grouped required fields type" {% if (settings.dl == 0 ) %}  style="display: none;"        {% endif %}>
+										        <label>Икки босқичли кириш турини танланг</label>
+										        <div class="field">
+										            <div class="ui radio checkbox">
+										                <input type="radio" {% if (settings.dl == 1) %} checked="true" {% endif %} name="method" value="1">
+										                <label><i class="mail red icon"></i> Электрон почта орқали </label>
+										            </div>
+										        </div>
+										        <div class="field">
+										            <div class="ui radio checkbox">
+										                <input type="radio" name="method" {% if (settings.dl == 2 ) %} checked="true" {% endif %} value="2">
+										                <label><i class="telegram blue icon"></i> Телеграм бот орқали </label>
+										            </div>
+										    	</div>
+										    </div>	
+										    <div class="required field method 1" {% if (settings.dl == 2  or settings.dl == 0) %}  style="display: none;" {% endif %}>
+										    	<label>Электрон почтани киритинг</label>
+										    	<input type="email" name="email" value="{{ settings.email }}" />
+											</div>                    	
+										    <div class="required field method 2" {% if (settings.dl == 1 or settings.dl == 0) %}  style="display: none;" {% endif %}>
+										    	<label>Telegram IDни киритинг</label>
+										    	<input type="number" name="telegramid"  value="{{ settings.telegramid }}" />
+										    	<div class="ui info message">
+										    		<div class="header">
+										    			Диққат!
+										    		</div>	
+										    		<p>Икки босқичли киришни Telegram Bot орқали созлашдан олдин <a target="_blank" href="https://t.me/epartiyabot">@epartiyabot</a> номли ботда /start тугмасини босинг.</p>
+										    	</div>
+											</div>
+											 <div class="ui error message"></div>
+											<div class="ui divider"> </div>
+										    <div class="field">
+										    	<button class="ui right floated primary right labeled icon button save disabled"  type="submit">
+										        	<i class="icon save"></i>Сақлаш
+										    	</button>
+										   	</div>
+										   	<div class="field"></div>                    				
+										</form>
+		                    		</div>
+		                    		<div class="six wide column">
+						                <p>
+						                <h4 class="ui header"><i class="info circle icon"></i>Маьлумот</h4>
+						                <div class="ui divider"></div>
+						                <ul class="ui list">
+						                    <li>Тизимга икки босқичли киришни Электрон почта ёки Телеграм бот орқали ёқиш мумкин.</li>
+						                    <br>
+						                    <li>(<span class="red label">*</span>) белгиси қўйилган барча катаклар тўлдирилиши шарт.</li>
+						                </ul>
+						                </p>
+					            	</div>	                    		
+		                    	</div>	                    	
+		                    </div>						
+						</div> 
+					</div>
+			    </div> 
+			</div>
+		</div>	
+		{% if role == 1 %}
+		<div class="ui tab" data-tab="regions">
+		    <div class="ui equal height grid">
+			    <div class="stretched column">
+			        <div class="sixteen wide column">
+			        	<div class="box">
+			               	<div class="ui segment main scroll">
+			               		<h3 class="ui header"> 
+			               		 	<i class="building outline icon"></i>
+			               		 	Туман ва Шахарлар
+			               		</h3>
+								<div class="ui stackable inverted green menu">
+									<a class="item" id="adddis"><i class="plus icon"></i>Туман/Шахар қўшиш</a>
+			                    </div>
+			                    {% include "message.html" %}
+		               		    <table class="ui small blue celled table loading" id="dis_table">
+						            <thead>
+						                <tr class="center aligned">
+						                    <th>№</th>
+						                    <th>Вилоят</th>
+						                    <th>Туман/Шахар</th>
+						                    <th>Бошқарув ускуналари</th>    
+						                </tr>
+						            </thead>    
+						            <tbody>
+						            	{% for districts in districts %}
+						                <tr class="center aligned" id="{{ districts.id }}">
+						                    <td>{{ loop.index }}</td>
+						                    <td>{{ districts.reg }}</td>
+						                    <td>{{ districts.name }}
+						                    <td class="two wide">
+						                        <div 
+						                        	data-idis="{{ districts.name }}"
+						                        	data-reg="{{ districts.reg }}"
+						                            data-id="{{ districts.id }}"                
+						                            class="ui compact icon button dis_edit"
+						                            data-tooltip="Туманни таҳрирлаш"
+						                            data-position="bottom right">
+						                            <i class="write icon"></i>
+						                        </div>
+						                        <div 
+						                            data-id="{{ districts.id }}"
+						                            data-name="{{ districts.name }}" 
+						                            class="ui compact icon button dis_del"
+						                            data-tooltip="Туманни ўчириш"
+						                            data-position="bottom right">
+						                            <i class="remove circle icon"></i>
+						                        </div>
+						                    </td>
+						                </tr>
+						                {% endfor %}
+						            </tbody>
+						        </table>   		                    
+							</div> 
+						</div>
+					</div>
+			    </div> 
+			</div>
+		</div>
+		<div class="ui tab" data-tab="message">
+		    <div class="ui equal height grid">
+			    <div class="stretched column">
+			        <div class="sixteen wide column">
+			        	<div class="box">
+			               	<div class="ui segment main scroll">
+			               		<h3 class="ui header"> 
+			               		 	<i class="envelope icon"></i>
+			               		 	Вилоят ва/ёки туман (шаҳар) Кенгашларига хабар юбориш 
+			               		</h3>
+								<div class="ui stackable inverted green menu">
+									<a class="item" id="addmes"><i class="plus icon"></i>Хабар қўшиш</a>
+			                    </div>
+			                    {% include "message.html" %}
+			                        {% if (message != null) %}
+		               		    <table class="ui small blue celled table loading" id="mes_table">
+						            <thead>
+						                <tr class="center aligned">
+						                    <th>№</th>
+						                    <th>Хабарни кўрўвчилар</th>
+						                    <th>Хабар тури</th>
+						                    <th>Давомийлиги</th>
+						                    <th>Хабар матни</th>
+						                    <th>Бошқарув ускуналари</th>    
+						                </tr>
+						            </thead>    
+						            <tbody>
+						            	{% for message in message %}
+						                <tr class="center aligned" id="{{ message.id }}">
+						                    <td>{{ loop.index }}</td>
+						                    <td>
+						                    {% if message.ken == 1 %} Барча 
+						                    {% elseif message.ken == 2 %} Вилоят Кенгашлари 
+						                    {% elseif  message.ken == 3 %} Туман ва Шаҳар Кенгашлари 
+						                    {% endif %}
+						                    </td>
+						                    <td>
+						                    {% if message.type == 1 %} <i class="ui icon info blue circle"></i> Маълумот 
+						                    {% elseif message.type == 2 %} <i class="ui icon exclamation triangle yellow"></i> Диққат!
+						                    {% elseif  message.type == 3 %} <i class="ui icon exclamation red"></i> Муҳим!
+						                    {% elseif  message.type == 4 %} <i class="ui icon envelope outline"></i> Оддий 
+						                    {% endif %}
+						                    </td>						                    
+						                    <td>{{ message.durdatetime }}</td>
+						                    <td>{{ message.text }}</td>
+						                    <td class="two wide">
+						                        <div 
+						                            data-id="{{ message.id }}"
+						                            class="ui compact icon button mes_del"
+						                            data-tooltip="Хабарни ўчириш"
+						                            data-position="bottom right">
+						                            <i class="remove circle icon"></i>
+						                        </div>
+						                    </td>
+						                </tr>
+						                {% endfor %}
+						            </tbody>
+						        </table>
+						           {% else %}
+                            	{% include "empty.html" %}
+                                 {% endif %}
+							</div> 
+						</div>
+					</div>
+			    </div> 
+			</div>
+		</div>	
+		{% endif %}		
+	</div>
+</div>
+{% if role == 1 %}
+	<div class="ui small modal" id="users-more-info">
+	    <i class="red close icon"></i>
+	    <div class="header"></div>
+	        <div class="content">
+	            <table class="ui small celled definition table">
+	                <tbody>
+	                    {% for field, name in usersFields %}
+	                        <tr>
+	                            <td>{{ name }}</td>
+	                            <td id="{{ field }}"></td>
+	                        </tr>
+	                    {% endfor %}
+	                </tbody>
+	            </table>                
+	        </div>
+	</div>
+	
+	<div class="ui tiny modal" id="users-edit">
+	    <i class="red close icon"></i>
+	    <div class="header"></div>
+	    <div class="content">
+	        <div class="centered ten wide column">
+	            <form class="ui form" method="post" id="form-users-edit">
+		            <input type="hidden" name="function" value="editusers">
+		        	<input type="hidden" name="id" id="usersid">
+					    <div class="inline  fields">
+					        <div class="six wide field">
+					          <label>Янги парол</label>
+					        </div>
+					        <div class="ten wide field">
+					            <div class="ui action input">
+					                <input placeholder="Янги парол" type="password" class="input newpass" name="new_pass" >
+					                <div class="ui icon button password" data-name-input="newpass">
+					                    <i class="eye icon newpass"></i>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					    <div class="inline  fields">
+					        <div class="six wide field">
+					          <label>Янги парол (Такрорий)</label>
+					        </div>
+					        <div class="ten wide field">
+					            <div class="ui action input">
+					                <input placeholder="Янги парол (Такрорий)" type="password" class="input repass" name="re_pass">
+					                <div class="ui icon button password" data-name-input="repass">
+					                    <i class="eye icon repass"></i>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					<div class="ui error message"></div>
+	            </form>
+	        </div>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Ёпиш</div>
+	        <div class="ui positive right labeled icon button">Ўзгартириш<i class="save icon"></i></div>
+	    </div>
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div>
+	
+	<div class="ui tiny modal" id="users-add">
+	    <i class="red close icon"></i>
+	    <div class="center align header">Фойдаланувчи қўшиш</div>
+	    <div class="content">
+	        <form class="ui form" method="post" id="form_add_users">
+	            <input type="hidden" name="function" value="addusers">
+	                <div class="ui segment">
+	                    <div class="inline required fields">
+	                        <div class="three wide field">
+	                            <label>Кенгаш</label>
+	                        </div>
+	                        <div class="twelve wide field">
+	                            <div class="inline fields ">
+	                                <div class="field">
+	                                    <div class="ui radio checkbox">
+	                                        <input type="radio" checked value="2" name="kname" id="kname">
+	                                        <label >Вилоят</label>
+	                                    </div>
+	                                </div>
+	                                <div class="field">
+	                                    <div class="ui radio checkbox">
+	                                        <input type="radio"  value="3" name="kname" id="tname">
+	                                        <label>Туман</label>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="inline required fields">
+	                      <div class="three wide field">
+	                            <label>Вилоят</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+		                        <div class="ui selection dropdown">
+		                            <input type="hidden" name="regions" value="">
+		                            <i class="dropdown icon"></i>
+		                            <div class="default text">Вилоят танганг</div>
+		                            <div class="menu">
+		                               {% for regions in regions %}
+		                                    <div class="item" data-value="{{ regions.code }}">{{ regions.name }}</div>
+		                               {% endfor %}                                     
+		                            </div>                                          
+		                        </div>
+	                        </div>
+	                    </div>
+	                    <div class="dis">
+		                    <div class="inline required fields">
+		                    	<div class="three wide field">
+		                        <label>Туман</label>
+		                        </div>
+		                        <div class="thirteen  wide field">
+			                        <div class="ui selection dropdown">
+			                            <input type="hidden" name="districts" value="">
+			                            <i class="dropdown icon"></i>
+			                            <div class="default text">Туман танланг</div>
+			                            <div class="menu" id="dis_item">
+			                            </div>                                     
+			                        </div>
+		                        </div>
+		                    </div>  
+	                    </div>                    
+	                    <div class="inline required fields">
+	                        <div class="three wide field">
+	                            <label>Логин</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+	                            <input placeholder="Логин" type="text" name="login" maxlength="50">
+	                        </div>
+	                    </div>
+	                    <div class="inline required fields">
+	                        <div class="three wide field">
+	                            <label>Парол</label>
+	                        </div>
+	                        <div class="six wide field">
+	                            <div class="ui fluid teal button generate password">
+	                            Генератсиялаш</div>
+	                        </div>
+	                        <div class="seven wide field">
+	                            <div class="ui action input">
+	                                <input placeholder="Парол" type="password" class="input newpass" maxlength="16" name="newpass" value="">
+	                                <div class="ui icon button password" data-name-input="newpass">
+	                                    <i class="eye icon newpass"></i>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="inline required fields">
+	                        <div class="three wide field">
+	                          <label>Статус</label>
+	                        </div>
+	                        <div class="twelve wide field">
+	                            <select class="ui dropdown" name="status">
+	                                <option value="1">Фаол</option>
+	                                <option value="0">Блокланган</option>
+	                            </select>                    
+	                        </div>
+	                    </div>            
+	                    <div  class="field">
+	                    </div>
+	                    <div class="field">
+	                    </div>
+	                    <div class="ui error message">                
+	                </div>
+	            </div> 
+	        </form>  
+	    </div>
+	    <div class="actions">
+	    	<div class="ui deny button">Ёпиш</div>
+	        <div class="ui positive right labeled icon button">Қушиш<i class="add icon"></i></div>
+	    </div>
+	    <div class="ui inverted dimmer modal_loader">
+	        <div class="ui text loader">Илтимос кутинг...</div>
+	    </div>
+	</div>
+	
+	<div class="ui small modal" id="users-del">
+	    <i class="red close icon"></i>
+	    <div class="header">Диққат!</div>
+	    <div class="content">
+	        <form method="post" class="ui form" id="form-del-user">
+	        	<input type="hidden" name="function" value="deluser">
+	        	<input type="hidden" name="id" id="userid"> 		    
+				<p>Сиз ҳақиқатдан ҳам <span class="span"></span>ни хоҳлайсизми ?</p>
+	        </form>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Йўқ</div>
+	        <div class="ui positive right labeled icon button">Ха<i class="save icon"></i></div>
+	    </div>    
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div>
+	
+	<div class="ui tiny modal" id="dis-del">
+	    <i class="red close icon"></i>
+	    <div class="header">Диққат!</div>
+	    <div class="content">
+	        <form method="post" class="ui form" id="form-del-dis">
+	        	<input type="hidden" name="function" value="deldis">
+	        	<input type="hidden" name="id" id="disid"> 		    
+				<p>Сиз ҳақиқатдан ҳам <span class="span"></span>ни хоҳлайсизми ?</p>
+	        </form>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Йўқ</div>
+	        <div class="ui positive right labeled icon button">Ха<i class="save icon"></i></div>
+	    </div>    
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div>
+
+	<div class="ui tiny modal" id="dis-edit">
+	    <i class="red close icon"></i>
+	    <div class="header"></div>
+	    <div class="content">
+	        <form method="post" class="ui form" id="form-edit-dis">
+	        	<input type="hidden" name="function" value="editdis">
+	        	<input type="hidden" name="id" id="iddis"> 		    
+				<div class="required field">
+	                <label>Туман номи</label>
+	                <input type="text" name="dis" placeholder="Туман номини киритинг">
+	            </div>
+	            <div class="ui error message"></div> 
+	        </form>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Ёпиш</div>
+	        <div class="ui positive right labeled icon button">Таҳрирлаш<i class="save icon"></i></div>
+	    </div>    
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div>
+
+	<div class="ui tiny modal" id="dis-add">
+	    <i class="red close icon"></i>
+	    <div class="header">Янги туман ёки шаҳар қўшиш</div>
+	    <div class="content">
+	        <form method="post" class="ui form" id="form-add-dis">
+	        	<input type="hidden" name="function" value="adddis">    
+	            <div class=" inline required fields">
+	              <div class="five wide field">
+	                    <label>Вилоят</label>
+	                </div>
+	                <div class="twelve  wide field">
+	                    <div class="ui selection dropdown">
+	                        <input type="hidden" name="region" value="">
+	                        <i class="dropdown icon"></i>
+	                        <div class="default text">Вилоят танланг</div>
+	                        <div class="menu">
+	                           {% for regions in regions %}
+	                                <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+	                           {% endfor %}                                     
+	                        </div>                                          
+	                    </div>
+	                </div>
+	            </div>  
+	            <div class="required fields">
+	             <div class="five wide field">
+	                    <label>Туман ёки шаҳар номи</label>
+	                </div>
+	                <div class="twelve  wide field">
+	                	<input type="text" name="dis" placeholder="Туман ёки шаҳар номини киритинг">
+	                </div>	
+	            </div>
+	           	<div class="ui error message"></div> 
+	        </form>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Ёпиш</div>
+	        <div class="ui positive right labeled icon button">Қўшиш<i class="save icon"></i></div>
+	    </div>    
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div> 
+
+	<div class="ui tiny modal" id="message-add">
+	    <i class="red close icon"></i>
+	    <div class="center align header">Хабар қўшиш</div>
+
+	    	<div class="content">
+                <div class="ui segment">
+                	<form class="ui form" method="post" id="form_add_message">
+	        			<input type="hidden" name="function" value="addmes">
+	                    <div class="inline required fields">
+	                        <div class="four wide field">
+	                            <label>Хабарни кўрўвчилар</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+								<div class="grouped fields">
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="ken"  tabindex="0" value="1" class="hidden">
+								        <label>Барча</label>
+								      </div>
+								    </div>
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="ken" tabindex="0" value="2" class="hidden">
+								        <label>Вилоят Кенгашлари</label>
+								      </div>
+								    </div>
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="ken" tabindex="0" value="3" class="hidden">
+								        <label>Туман ва Шаҳар Кенгашлари</label>
+								      </div>
+								    </div>
+								  </div>
+	                        </div>
+	                    </div>
+	                    <div class="inline required fields">
+	                        <div class="four wide field">
+	                            <label>Хабар тури</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+								<div class="grouped fields">
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="type" value="1"  tabindex="0" class="hidden">
+								        <label><i class="ui icon info blue circle"></i> Маълумот</label>
+								      </div>
+								    </div>
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="type" value="2" tabindex="0" class="hidden">
+								        <label><i class="ui icon exclamation triangle yellow"></i> Диққат!</label>
+								      </div>
+								    </div>
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="type" value="3" tabindex="0" class="hidden">
+								        <label><i class="ui icon exclamation red"></i> Муҳим!</label>
+								      </div>
+								    </div>
+								    <div class="field">
+								      <div class="ui radio checkbox">
+								        <input type="radio" name="type" value="4" tabindex="0" class="hidden">
+								        <label><i class="ui icon envelope outline"></i> Оддий </label>
+								      </div>
+								    </div>
+								  </div>
+	                        </div>
+	                    </div>
+	                    <div class="inline required fields">
+	                        <div class="four wide field">
+	                            <label>Давомийлиги</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+			                    <div class="grouped fields">
+		                        	<div class="field">
+									   	<input id="one" type="checkbox" name="one" value="1" checked="true" />
+	  									<span class="item-text">Маълум вақтгача</span>   
+									</div>
+									<div class="field duration">
+								    	<input placeholder="Санани белгиланг" type="text" class="date message" name="durdate" style="width: 150px;">
+								    	<input placeholder="Вақтни белгиланг" type="text" class="time" name="durtime" style="width: 100px;"> 
+								    	 гача
+									</div>
+								</div>
+							</div>
+						</div>	                    
+	                    <div class="inline required fields">
+	                      <div class="four wide field">
+	                            <label>Хабар матни</label>
+	                        </div>
+	                        <div class="thirteen wide field">
+		                        <textarea style="height: 193px;" name="text"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="ui error message">   
+	                </form>             
+                </div>
+	            </div>
+	    	</div>
+	    
+	    <div class="actions">
+	    	<div class="ui deny button">Ёпиш</div>
+	        <div class="ui positive right labeled icon button">Қушиш<i class="add icon"></i></div>
+	    </div>
+	    <div class="ui inverted dimmer modal_loader">
+	        <div class="ui text loader">Илтимос кутинг...</div>
+	    </div>
+	</div>
+
+	<div class="ui tiny modal" id="mes-del">
+	    <i class="red close icon"></i>
+	    <div class="header">Хабарни ўчириш!</div>
+	    <div class="content">
+	        <form method="post" class="ui form" id="form-del-mes">
+	        	<input type="hidden" name="function" value="delmes">
+	        	<input type="hidden" name="id" id="mesid"> 		    
+				<p>Сиз ҳақиқатдан ҳам ушбу хабарни ўчиришни хоҳлайсизми ?</p>
+	        </form>
+	    </div>
+	    <div class="actions">
+	        <div class="ui deny button">Йўқ</div>
+	        <div class="ui positive right labeled icon button">Ха<i class="save icon"></i></div>
+	    </div>    
+	    <div class="ui inverted dimmer modal_loader">
+		    <div class="ui text loader">Илтимос кутинг...</div>
+		</div>
+	</div>	
+{% endif %}

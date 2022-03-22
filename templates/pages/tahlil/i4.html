@@ -1,0 +1,109 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form class="ui form" method="post" id="form-register">
+        <div class="ui secondary stackable menu">
+            <div class="item">
+                <h4 class="ui header"> {{ kname }} Кенгаши партия аъзоларининг миллат таркиби (4-илова)</h4>
+            </div>
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ begin_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ end_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+                        <i class="checkmark icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% if (i4 != '') %}
+    <div class="ui inverted green menu">
+        <a class="item print desktop" data-print="i4"><i class="print icon"></i>Чоп қилиш</a>
+        <a class="item export" data-file="{{ kname }} Кенгаши партия аъзоларининг миллат таркиби (4-илова)" data-export="i4"><i class="file excel outline icon"></i>Экспорт</a>
+        <a class="item diagram" data-number="1"><i class="signal icon"></i>Диаграма</a>   
+    </div>      
+    <div class="wrapper">
+        <table class="ui small blue celled structured table" id="i4">
+        <thead>
+            <tr class="center aligned">
+                <th rowspan="2">№</th>
+			    {% if role == 1 %}
+			    	<th rowspan="2">Вилоят номи</th>
+			    {% elseif role == 2 %}
+			    	<th rowspan="2">Туман ва шаҳар номи</th>
+			    {% elseif role == 3 %}
+			    	<th rowspan="2">БПТ номи</th>
+				{% endif %}   
+                <th rowspan="2">Аъзолар сони</th>
+                <th colspan="8">Шу жумладан:</th>
+            </tr>
+            <tr class="center aligned">
+                <th class="1h">Ўзбеклар</th>
+                <th class="1h">Руслар</th>
+                <th class="1h">Қорақалпоқлар</th>
+                <th class="1h">Қозоқлар</th>
+                <th class="1h">Татарлар</th>
+                <th class="1h">Тожиклар</th>
+                <th class="1h">Қирғизлар</th>
+                <th class="1h">Бошқа миллат вакиллари</th>
+            </tr>
+        </thead>    
+        <tbody>
+            {% for i4 in i4 %}
+            <tr class="center aligned">
+                <td>{{ loop.index }}</td>
+                <td>{{ i4.kname }}</td>
+                <td class="azolarcount">{{ i4.count_azolar }}</td>
+                <td class="uz">{{ i4.uz }}</td>
+                <td class="ru">{{ i4.ru }}</td>
+                <td class="qq">{{ i4.qq }}</td>
+                <td class="qo">{{ i4.qo }}</td>
+                <td class="ta">{{ i4.ta }}</td>
+                <td class="tj">{{ i4.tj }}</td>
+                <td class="qi">{{ i4.qi }}</td>
+                <td class="other">{{ i4.other }}</td>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="center aligned">
+                <th>Жами:</th>
+                <th></th>
+                <th>{{ total["count_azolar"] }}</th>
+                <th class="1d">{{ total["uz"] }}</th>
+                <th class="1d">{{ total["ru"] }}</th>
+                <th class="1d">{{ total["qq"] }}</th>
+                <th class="1d">{{ total["qo"] }}</th>
+                <th class="1d">{{ total["ta"] }}</th>
+                <th class="1d">{{ total["tj"] }}</th>
+                <th class="1d">{{ total["qi"] }}</th>
+                <th class="1d">{{ total["other"] }}</th>
+            </tr>
+        </tfoot>
+    </table>
+    </div>
+</div>
+    {% else %}
+    	{% include "empty.html" %}
+    {% endif %}
+<div class="ui small modal" id="diagram-info" style="text-align: center;">
+    <i class="red close icon"></i>
+    <div class="header">Кенгаш партия аъзоларининг миллат таркиби (фоизларда)</div>
+        <div class="content">
+            <div id="diagram1" style="display: inline-block;"></div>
+        </div>
+</div>   
+{% include "footer.html" %}
+

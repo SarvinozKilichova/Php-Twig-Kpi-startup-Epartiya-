@@ -1,0 +1,1075 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+<form id="form_filter" method="POST">
+	<input type="hidden" name="function" value="setFilter">
+	<input type="hidden" name="page" id="page" value="{{ filter.page }}">
+    <div class="ui secondary stackable menu">
+        <div class="item">
+            <h4 class="ui header azolar">{{ kname }} Кенгаши aъзолар рўйхати</h4>
+            <div class="results"></div>
+        </div>
+        {% if role == 1 %}
+	        <div class="right menu">
+	            <div class="item">
+	                <div class="ui input left icon">
+	                    <i class="calendar icon"></i>
+	                    <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ filter.begin_date }}">
+	                </div>
+	            </div>
+	            <div class="item">
+	                <div class="ui input left icon">
+	                    <i class="calendar icon"></i>
+	                    <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ filter.end_date }}">
+	                </div>
+	            </div>
+	            <div class="item">
+	                <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+	                    <i class="checkmark icon"></i>
+	                </button>
+	            </div>
+	        </div>
+     	{% endif  %}
+    </div>
+    <div class="ui inverted green stackable menu">
+	    {% if role != 1 %}
+	        <a class="item" id="addazo"><i class="add user icon"></i>Аъзо қўшиш</a>
+	    {% endif  %}   
+        <a class="item print desktop" data-print="azolar_table">
+        	<i class="print icon"></i>Чоп қилиш
+        </a>
+        <a class="item export" data-file="Аъзолар рўйхати" data-export="azolar_table">
+        	<i class="file excel outline icon"></i>Экспорт
+       	</a>
+        <div class="right menu">
+        	<div class="item">
+		        <div class="ui icon input">
+		            <input placeholder="Излаш..." name="search" type="text" id="search" value="{{ filter.search != 'NULL' ? filter.search:'' }}"><i class="search icon"></i>
+		        </div>
+	         </div>
+        	{% if role == 2 %}
+            	<div class="ui input dropdown item">
+                    <div class="ui selection dropdown" id="dis">
+                        <input name="dis" type="hidden" value="{{ filter.tcode }}">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Кенгашни танланг</div>
+                        <div class="menu">
+                            <div class="item" data-value="0">Барчаси</div> 
+                            <div class="divider"></div>  
+                            {% for dis in dis %}
+                                <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+            	</div>
+        	{% endif %}
+           	{% if role == 1 %}
+	            <div class="ui dropdown item  input">
+		            <div class="ui selection dropdown" id="regions">
+		                <input type="hidden" name="regions" value="{{ filter.kcode }}">
+		                <i class="dropdown icon"></i>
+		                <div class="default text">Вилоятини танланг</div>
+		                <div class="menu">
+		                	<div class="item" data-value="0">Барчаси</div>
+		                    {% for regions in regions %}
+		                        <div class="item" data-value="{{ regions.code }}">{{ regions.name }}</div>
+		                   	{% endfor %}                               
+		                </div>
+		            </div>
+	        	</div>
+        	{% endif %}
+        </div>
+    </div>
+
+    {% if (azolar != null) %}
+    <div class="dimmable">
+        <div class="ui inverted dimmer" id="azolar-loader">
+            <div class="ui text inline loader">Маълумотлар қайта юкланмоқда илтимос кутинг...</div>
+        </div>
+       {% include "message.html" %}
+        <div class="sticky-table">
+            <table class="ui small blue celled table loading" id="azolar_table">
+                <thead>
+                    <tr class="center aligned">
+                        <th>№</th>
+                        <th>Ф.И.О</th>
+                        <th>Туғулган йили ва жойи</th>
+                        <th>Маълумоти ва мутахассислиги</th>
+                        <th>Партия билет рақами</th>
+                        <th>БПТ номи, БПТ кирган санаси</th>
+                        <th>Иш жойи ва лавозими, иш телефон рақами</th>
+                        <th>Турар жойи (телефон рақами)</th>
+                        <th>Қўшилган санаси</th>
+                        <th>Бошқарув ускуналари</th>    
+                    </tr>
+                </thead>    
+                <tbody>
+                	{% for azolar in azolar %}
+                    <tr class="center aligned" id="{{ azolar.id }}">
+                        <td>{{ (filter.page - 1) * filter.limit + loop.index }}</td>
+                        <td>{{ azolar.fullname }}</td>
+                        <td>{{ azolar.bornAddress }}</td>
+                        <td>{{ azolar.edupro}}</td>
+                        <td>{% if azolar.pnum=='' %} <div class="ui red basic label">Берилмаган</div> {% else %} {{ azolar.pnum}} {% endif %}</td>
+                        <td>{{ azolar.ibptname~' '~azolar.bptasana }}</td>
+                        <td>{{ azolar.job }}</td>
+                        <td>{{ azolar.address }} </td>
+                        <td>{{ azolar.iinsert_datetime }}</td>
+                        <td class="two wide">
+                            <div
+                                data-id="{{ azolar.id }}"
+                                data-fullname="{{ azolar.f_name~' '~azolar.m_name }}"
+                                data-jins="{% if azolar.jins=='1' %} Еркак {% else %} Аёл {% endif %}"
+                                data-ination="{{ azolar.ination }}"
+                                data-tsana="{{ azolar.tsana }}"
+                                data-pas_sr="{{ azolar.pas_sr }}" 
+                                data-pas_who="{{ azolar.pas_who }}"
+                                data-pas_date="{{ azolar.pas_date }}"
+                                data-ieducation="{{ azolar.ieducation }}"
+                                data-iprofession="{{ azolar.iprofession }}"
+                                data-iphd="{% if azolar.iphd =='' %}Киритилмаган{% else %}{{ azolar.iphd }}{% endif %}"
+                                data-ires="{{ azolar.ires }}"
+                                data-ibpr="{% if azolar.itjv =='' %}Киритилмаган{% else %} {{ azolar.itjv }}{% endif %}"
+                                data-tbpi="{% if azolar.itjqi =='' %}Киритилмаган{% else %} {{ azolar.itjqi }}{% endif %}"
+                                data-itkname="{{ azolar.itkname }}"
+                                data-ibptname="{{ azolar.ibptname }}"
+                                data-asana="{{ azolar.asana }}"
+                                data-pnum="{% if azolar.pnum =='' %}Берилмаган{% else %} {{ azolar.pnum }}{% endif %}"
+                                data-iplevel="{% if azolar.plevel==2 %} БПТ раиси {% else %} Аьзо {% endif %}"
+                                data-idep="
+                                	{% if azolar.dep == '1' %} 
+                                		Олий Мажлис депутати 
+                                	{% else %} 
+                                		{% if azolar.dep == '2' %} 
+                                			Вилоят Кенгаши депутати 
+                                		{% else %}
+                                			 {% if azolar.dep == '3' %} 
+                                			 	Туман Кенгаши депутати 
+                                			 {% endif %}                            			 
+                                		{% endif %} 		
+                                	{% endif %} 
+                                	{% if azolar.dep=='0' %} Йўқ {% endif %}"
+                                data-sdate="{% if azolar.sdate =='' %}Сайланмаган{% else %} {{ azolar.sdate }}{% endif %}"
+                                data-yajv="{{ azolar.iyajv }}"
+                                data-yajt="{{ azolar.iyajt }}"
+                                data-yajmfy="{% if azolar.yajmfy =='' %}Киритилмаган{% else %} {{ azolar.yajmfy }}{% endif %}"
+                                data-yajqi="{% if azolar.yajqi =='' %}Киритилмаган{% else %} {{ azolar.yajqi }}{% endif %}"
+                                data-tel="{% if azolar.tel != '' %} {{ '+998'~azolar.tel }} {% else %} Киритилмаган {% endif %}"
+                                data-email="{% if azolar.email =='' %}Киритилмаган{% else %} {{ azolar.email }} {% endif %}"
+                                data-iactivity="{{  azolar.iactivity }}"
+                                data-ishj="{{ azolar.ishj }}"
+                                data-ishlavozm="{% if azolar.joblevel=='2' %} Раҳбар {% else %} Ишчи {% endif %}"
+                                data-level = "{{  azolar.level }}"
+                                data-ishtel="{% if azolar.jobtel != '' %} {{ '+998'~azolar.jobtel }} {% else %} Киритилмаган {% endif %}"
+                                class="ui compact icon button info"
+                                data-tooltip="Аъзо маълумотлари" 
+                                data-position="bottom right">
+                                <i class="info icon"></i>
+                            </div>
+                            {% if role == 1 %}
+                            <div 
+                                data-fullname="{{ azolar.f_name~' '~azolar.m_name }}"
+                                data-id="{{ azolar.id }}"
+                                data-rll="{{ azolar.joblevel}}"
+                                data-ifname="{{ azolar.f_name }}"
+                                data-imname="{{ azolar.m_name }}"
+                                data-ilname="{{ azolar.l_name }}"
+                                data-rsex="{{ azolar.jins }}"
+                                data-dnations="{{ azolar.nation }}"
+                                data-itdate="{{ azolar.tsana }}"
+                                data-ipassr="{{ azolar.pas_sr }}" 
+                                data-ipaswho="{{ azolar.pas_who }}"
+                                data-ipasdate="{{ azolar.pas_date }}"
+                                data-deducation="{{ azolar.education }}"
+                                data-dprofession="{{ azolar.profession }}"
+                                data-dphd="{{ azolar.phd }}"
+                                data-dres="{{ azolar.res }}"
+                                data-dbpr="{{ azolar.tjv }}"
+                                data-ibpi="{{ azolar.tjqi }}"
+                                data-dbpt_name="{{ azolar.bptname }}"
+                                data-bptname="{{ azolar.ibptname }}"
+                                data-ikname="{{ azolar.itkname }}"
+                                data-iadate="{{ azolar.asana }}"
+                                data-ipnum="{{ azolar.pnum }}"
+                                data-plevel="{{ azolar.plevel }}"
+                                data-ddep="{{ azolar.dep }}"
+                                data-isdate="{{ azolar.sdate }}"
+                                data-dlpr="{{ azolar.yajv }}"
+                                data-dlpd="{{ azolar.yajt }}"
+                                data-lpd="{{ azolar.iyajt }}"
+                                data-ilpmfy="{{ azolar.yajmfy }}"
+                                data-ilpi="{{ azolar.yajqi }}"
+                                data-itel="{{ azolar.tel }}"
+                                data-iemail="{{ azolar.email }}"
+                                data-dactivity="{{  azolar.activity }}"
+                                data-iwork="{{ azolar.ishj }}"
+                                {% if (azolar.activity == 3) %}
+                                	data-dedulevel="{{ azolar.level}}"
+                                {% else %}
+                                	data-ilevel="{{ azolar.level}}"
+                                {% endif %}
+                                data-iworktel="{{ azolar.jobtel }}"                            
+                                class="ui compact icon button edit"
+                                data-tooltip="Аъзо маълумотларини таҳрирлаш"
+                                data-position="bottom right">
+                                <i class="write icon"></i>
+                            </div>
+                            {% endif %}
+                            {% if role != 1 %}
+                            <div 
+                                data-fullname="{{ azolar.f_name~' '~azolar.m_name}}"
+                                data-id="{{ azolar.id }}"
+                                class="ui compact icon button del"
+                                data-tooltip="Аъзоликдан ўчириш"
+                                data-position="bottom right">
+                                <i class="remove circle icon"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="ui segment">
+         	{% include "pagination.html" %}
+        </div>        
+    </div>
+    {% else %}
+    	{% include "empty.html" %}
+    {% endif %}
+</form>   
+</div>
+
+<div class="ui small modal" id="azolar-more-info">
+    <i class="red close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <table class="ui small celled definition table">
+            <tbody>
+                {% for field, name in azolarFields %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td id="{{ field }}"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>                
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+    </div>        
+</div>
+
+<div class="ui modal" id="azolar-add">
+    <i class="red close icon"></i>
+    <div class="header">Аъзо қўшиш</div>
+    <div class="content">
+        <div class="centered ten wide column">
+            <form class="ui form" method="post" id="form-azo-add">
+            <input type="hidden" name="function" value="addazo">        
+          		<div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Умуимй маълумотлари</p> 
+                    </div>                                  
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Фамилияси</label>
+                            <input type="text" name="fname" class="fname" data-form="form-azo-add" placeholder="Фамилиясини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Исми</label>
+                            <input type="text" name="mname" placeholder="Исмини киритинг">
+                        </div>
+                        <div class="field">
+                            <label>Отасининг исми</label>
+                            <input type="text" name="lname" placeholder="Отасининг исмини киритинг">
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Жинси</label>
+                            <div class="inline fields">
+                                <div class="field">
+                                    <div class="ui active radio checkbox">
+                                        <input type="radio" name="sex" id="male" value="1">
+                                        <label>Эркак <i class="male icon"></i></label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" name="sex" id="female" value="2">
+                                        <label>Аёл <i class="female icon"></i></label>
+                                    </div>
+                                </div>                                          
+                            </div>
+                        </div>
+                        <div class="required field">
+                            <label>Миллати</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="nations">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Миллатини танланг</div>
+                                <div class="menu">
+	                               {% for nations in nations %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ nations.name }}</div>
+	                               {% endfor %}
+                               </div>
+                            </div>
+                        </div>
+                        <div class="required field">
+                            <label>Туғулгна санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="date"  name="tdate" type="text" placeholder="Туғулган санаси киритинг">
+                                </div>
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Паспорт серияси</label>
+                            <input type="text" name="passr" placeholder="Масалан: AB1234567">
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Маълумоти</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="education">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Маълумотини танланг</div>
+                                <div class="menu">
+	                               {% for educations in educations %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ educations.name }}</div>   
+	                               {% endfor %} 
+                                </div>
+                            </div>               
+                        </div>
+                        <div class="required field">
+                            <label>Мутассислиги</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="profession">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Мутассислигини танганг</div>
+                                <div class="menu">
+	                               {% for professions in professions %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ professions.name }}</div>
+	                               {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Илмий даражаси</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="phd">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Илмий даражасини танланг</div>
+                                <div class="menu">
+                                	<div class="item" data-value="0"></div>
+                               {% for phd in phd %}
+                                    <div class="item" data-value="{{ loop.index }}">{{ phd.name }}</div>           
+                               {% endfor %} 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Туғулган жойи маълумотлари</p> 
+                    </div>                              
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Республика</label>
+                            <div class="ui selection dropdown res">
+                                <input type="hidden" name="res" value="" data-form="form-azo-add">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Республикасини танланг</div>
+                                <div class="menu">
+	                               {% for respublics in respublics %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ respublics.name }}</div>
+	                               {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="required field for_uz">
+                            <label>Вилоят</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="bpr" value="">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Вилоятини танланг</div>
+                                <div class="menu">
+	                                {% for regions in regions %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+	                               	{% endfor %}                               
+                                </div>
+                            </div>
+                        </div>
+                        <div class="required field for_other">
+                            <label>Туғулган жойи маълумотлари</label>
+                            <input type="text" name="bpi" placeholder="Туғулган жойи маълумотларини киритинг">
+                        </div>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="field">
+                        <div class="ui segment ">   
+                            <div class="ui top attached label">
+                                <p>Партиявий маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Қайси БПТ ҳисобида туради</label>
+                                <div class="ui selection dropdown ken">
+                                    <input type="hidden" name="bpt_name" data-value="" />
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">БПТни танланг</div>
+                                    <div class="menu">
+		                               {% for bpt_name in bpt_name %}
+		                                    <div class="item" data-value="{{ bpt_name.idinsert }}">{{ bpt_name.bptname }}</div>
+		                               {% endfor %} 
+                                    </div>                                          
+                                </div>
+                            </div>
+                            {% if role == 2 %}
+                            <div class="required field">
+                                <label>Кенгаш номи</label>
+                                <div class="ui selection dropdown ken">
+                                    <input type="hidden" name="kname" data-value="" />
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Кенгашни танланг</div>
+                                    <div class="menu">
+		                               {% for dis in dis %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+		                               {% endfor %} 
+                                    </div>                                          
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="required field">
+                                <label>Партияга аъзо бўлган санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="adate" name="adate" type="text" placeholder="Аъзо бўлган санаси киритинг">
+                                </div>
+                            </div>                                                          
+                            <div class="field">
+                                <label>Партия билет рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">№</div>
+                                    <input type="text" name="pnum" placeholder="Масалан: 55555">
+                                </div>
+                            </div>                                              
+                            <div class="field">
+                                <label>Депутатлиги</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="dep" data-form="form-azo-add">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Депутатлигини танланг</div>
+                                    <div class="menu">
+                                        <div class="item" data-value="0"></div>
+                                        <div class="item" data-value="1">Олий Мажлис депутати</div>
+                                        <div class="item" data-value="2">Вилоят Кенгаши депутати</div>
+                                        <div class="item" data-value="3">Туман Кенгаши депутати</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="required field ssana">
+                                <label>Сайланган йили</label>
+                                <input type="number" name="sdate" min="1995" max="2020" maxlength="4" size="4" placeholder="Масалан: 2020">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui segment">    
+                            <div class="ui top attached label">
+                                <p>Яшаш манзили маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Вилоят</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="lpr" value="" data-form="form-azo-add">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Вилоят танганг</div>
+                                    <div class="menu">
+		                               {% for regions in regions %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+		                               {% endfor %}                                     
+                                    </div>                                          
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <label>Туман</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="lpd">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Туман танланг</div>
+                                    <div class="menu" id="lpd_item">
+                                    </div>                                     
+                                </div>
+                            </div>                      
+                            <div class="field">
+                                <label>МФЙ/ҚФЙ/ШФЙ</label>
+                                <input type="text" name="lpmfy" placeholder="МФЙ/ҚФЙ/ШФЙ киритинг">
+                            </div>      
+                            <div class="field">
+                                <label>Яшаш манзили</label>
+                                <input type="text" name="lpi" placeholder="Яшаш манзилини киритинг">
+                            </div>                                              
+                            <div class="field">
+                                <label>Телефон рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="tel" maxlength=9 size=9 placeholder="Телефон рақамини киритинг">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Электрон почтаси</label>
+                                <input type="email" name="email" placeholder="Электрон почтани киритинг">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui segment" id="workinfo">   
+                            <div class="ui top attached label">
+                                <p>Меҳнат фаолияти маълумотлари</p> 
+                            </div>      
+                            <div class="required field">
+                                <label>Фаолият соҳаси</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="activity" data-form="form-azo-add">
+                                    <i class="dropdown icon"></i>   
+                                    <div class="default text">Фаолият соҳасини танланг</div>
+                                    <div class="menu">
+		                               {% for activity in activity %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ activity.name }}</div>
+		                               {% endfor %} 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="required field work">
+                                <label id="worklbl">Иш жойи</label>
+                                <input type="text" name="work" placeholder="Иш жойини киритинг">
+                            </div>  
+                            <div class="required field ll">
+                                <label>Лавозим даражаси</label>
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input type="radio" name="ll" id="worker"  value="1">
+                                            <label>Оддий ходим</label>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input type="radio" name="ll" id="boss"  value="2">
+                                            <label>Раҳбар</label>
+                                        </div>
+                                    </div>  
+                                </div>                                      
+                            </div>  
+                            <div class="required field level">
+                                <label>Лавозими</label>
+                                <input type="text" name="level" placeholder="Лавозимини киритинг">
+                            </div>
+                            <div class="required field edulevel">
+                                <label>Босқичи</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="edulevel" id="ulevel">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">
+                                        <div class="item" data-value="1">1-босқич</div>
+                                        <div class="item" data-value="2">2-босқич</div>
+                                        <div class="item" data-value="3">3-босқич</div>
+                                        <div class="item" data-value="4">4-босқич</div>
+                                        <div class="item" data-value="5">5-босқич</div>
+                                        <div class="item" data-value="6">6-босқич</div>
+                                        <div class="item" data-value="7">7-босқич</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field worktel">
+                                <label id="worktellbl">Телефон рақами</label>
+                                <div class="ui fluid labeled input ">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="worktel" maxlength=9 size=9 placeholder="Телефон рақамни киритинг">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Қўшиш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+
+<div class="ui modal" id="azolar-edit">
+    <i class="red close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <div class="centered ten wide column">
+            <form class="ui form" method="post" id="form-azo-edit">
+            <input type="hidden" name="function" value="editazo">
+        	<input type="hidden" name="editid" id="azoid">
+          		<div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Умуимй маълумотлари</p> 
+                    </div>                                  
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Фамилияси</label>
+                            <input type="text" name="fname" class="fname" placeholder="Фамилиясини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Исми</label>
+                            <input type="text" name="mname" placeholder="Исмини киритинг">
+                        </div>
+                        <div class="field">
+                            <label>Отасининг исми</label>
+                            <input type="text" name="lname" placeholder="Отасининг исмини киритинг">
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Жинси</label>
+                            <div class="inline fields">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" name="sex" id="male" value="1">
+                                        <label>Эркак <i class="male icon"></i></label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" name="sex" id="female" value="2">
+                                        <label>Аёл <i class="female icon"></i></label>
+                                    </div>
+                                </div>                                          
+                            </div>
+                        </div>
+                        <div class="required field">
+                            <label>Миллати</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="nations">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Миллатини танланг</div>
+                                <div class="menu">
+	                               {% for nations in nations %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ nations.name }}</div>
+	                               {% endfor %}
+                               </div>
+                            </div>
+                        </div>
+                        <div class="required field">
+                            <label>Туғулгна санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="date"  name="tdate" type="text" placeholder="Туғулган санаси киритинг">
+                                </div>
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Паспорт серияси</label>
+                            <input type="text" name="passr" placeholder="Масалан: AB1234567">
+                        </div>
+                        <div class="required field">
+                            <label>Ким томонидан берилган</label>
+                            <input type="text" name="paswho" placeholder="Паспорт ким томонидан берилганлигини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Берилган вақти</label>
+                            <div class="ui input left icon">
+                                <i class="calendar icon"></i>
+                                <input class="date" name="pasdate" type="text" placeholder="Паспорт берилган вақтини киритинг">
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Маълумоти</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="education">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Маълумотини танланг</div>
+                                <div class="menu">
+	                               {% for educations in educations %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ educations.name }}</div>   
+	                               {% endfor %} 
+                                </div>
+                            </div>               
+                        </div>
+                        <div class="required field">
+                            <label>Мутассислиги</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="profession">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Мутассислигини танганг</div>
+                                <div class="menu">
+	                               {% for professions in professions %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ professions.name }}</div>
+	                               {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Илмий даражаси</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="phd">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Илмий даражасини танланг</div>
+                                <div class="menu">
+                                	<div class="item" data-value="0"></div>
+                               {% for phd in phd %}
+                                    <div class="item" data-value="{{ loop.index }}">{{ phd.name }}</div>           
+                               {% endfor %} 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Туғулган жойи маълумотлари</p> 
+                    </div>                              
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Республика</label>
+                            <div class="ui selection dropdown res">
+                                <input type="hidden" name="res" value="" data-form="form-azo-edit">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Республикасини танланг</div>
+                                <div class="menu">
+	                               {% for respublics in respublics %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ respublics.name }}</div>
+	                               {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="required field for_uz">
+                            <label>Вилоят</label>
+                            <div class="ui selection dropdown">
+                                <input type="hidden" name="bpr" value="">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Вилоятини танланг</div>
+                                <div class="menu">
+	                                {% for regions in regions %}
+	                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+	                               	{% endfor %}                               
+                                </div>
+                            </div>
+                        </div>
+                        <div class="required field for_other">
+                            <label>Туғулган жойи маълумотлари</label>
+                            <input type="text" name="bpi" placeholder="Туғулган жойи маълумотларини киритинг">
+                        </div>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="field">
+                        <div class="ui segment ">   
+                            <div class="ui top attached label">
+                                <p>Партиявий маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Қайси БПТ ҳисобида туради</label>
+                                <div class="ui selection dropdown ken">
+                                    <input type="hidden" name="bpt_name"/>
+                                    <i class="dropdown icon"></i>
+                                    <div class="text" id="bptken"></div>
+                                    <div class="menu" id="bpt_item">
+		                              
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <label>Кенгаш номи</label>
+                                <input type="text" name="kname" readonly="true" disabled>
+                            </div>
+                            <div class="required field">
+                                <label>Партияга аъзо бўлган санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="adate" name="adate" type="text" placeholder="Аъзо бўлган санаси киритинг">
+                                </div>
+                            </div>                                                          
+                            <div class="field">
+                                <label>Партия билет рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">№</div>
+                                    <input type="text" name="pnum" placeholder="Масалан: 55555">
+                                </div>
+                            </div>                                              
+                            <div class="field">
+                                <label>Депутатлиги</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="dep" data-form="form-azo-edit">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Депутатлигини танланг</div>
+                                    <div class="menu">
+                                        <div class="item" data-value="0"></div>
+                                        <div class="item" data-value="1">Олий Мажлис депутати</div>
+                                        <div class="item" data-value="2">Вилоят Кенгаши депутати</div>
+                                        <div class="item" data-value="3">Туман Кенгаши депутати</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="required field ssana">
+                                <label>Сайланган йили</label>
+                                <input type="number" name="sdate" min="1995" max="2020" maxlength="4" size="4" placeholder="Масалан: 2020">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui segment">    
+                            <div class="ui top attached label">
+                                <p>Яшаш манзили маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Вилоят</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="lpr" value="" data-form="form-azo-edit">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Вилоят танганг</div>
+                                    <div class="menu">
+		                               {% for regions in regions %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+		                               {% endfor %}                                     
+                                    </div>                                          
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <label>Туман</label>
+                                <div class="ui selection dropdown lpd">
+                                    <input type="hidden" name="lpd">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Туман танланг</div>
+                                    <div class="menu" id="lpd_item">
+                                    </div>
+                                </div>
+                            </div>                      
+                            <div class="field">
+                                <label>МФЙ/ҚФЙ/ШФЙ</label>
+                                <input type="text" name="lpmfy" placeholder="МФЙ/ҚФЙ/ШФЙ киритинг">
+                            </div>      
+                            <div class="field">
+                                <label>Яшаш манзили</label>
+                                <input type="text" name="lpi" placeholder="Яшаш манзилини киритинг">
+                            </div>                                              
+                            <div class="field">
+                                <label>Телефон рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="tel" maxlength=9 size=9 placeholder="Телефон рақамини киритинг">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Электрон почтаси</label>
+                                <input type="email" name="email" placeholder="Электрон почтани киритинг">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui segment" id="workinfo">   
+                            <div class="ui top attached label">
+                                <p>Меҳнат фаолияти маълумотлари</p> 
+                            </div>      
+                            <div class="required field">
+                                <label>Фаолият соҳаси</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="activity" data-form="form-azo-edit">
+                                    <i class="dropdown icon"></i>   
+                                    <div class="default text">Фаолият соҳасини танланг</div>
+                                    <div class="menu">
+		                               {% for activity in activity %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ activity.name }}</div>
+		                               {% endfor %} 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="required field work">
+                                <label id="worklbl">Иш жойи</label>
+                                <input type="text" name="work" placeholder="Иш жойини киритинг">
+                            </div>  
+                            <div class="required field ll">
+                                <label>Лавозим даражаси</label>
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input type="radio" name="ll" id="worker" value="1">
+                                            <label>Оддий ходим</label>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui radio checkbox">
+                                            <input type="radio" name="ll" id="boss" value="2">
+                                            <label>Раҳбар</label>
+                                        </div>
+                                    </div>  
+                                </div>                                      
+                            </div>  
+                            <div class="required field level">
+                                <label>Лавозими</label>
+                                <input type="text" name="level" placeholder="Лавозимини киритинг">
+                            </div>
+                            <div class="required field edulevel">
+                                <label>Босқичи</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="edulevel" id="ulevel">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">
+                                        <div class="item" data-value="1">1-босқич</div>
+                                        <div class="item" data-value="2">2-босқич</div>
+                                        <div class="item" data-value="3">3-босқич</div>
+                                        <div class="item" data-value="4">4-босқич</div>
+                                        <div class="item" data-value="5">5-босқич</div>
+                                        <div class="item" data-value="6">6-босқич</div>
+                                        <div class="item" data-value="7">7-босқич</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field worktel">
+                                <label id="worktellbl">Телефон рақами</label>
+                                <div class="ui fluid labeled input ">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="worktel" maxlength=9 size=9 placeholder="Иш телефон рақамини киритинг">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Таҳрирлаш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+
+<div class="ui small modal" id="azolar-del">
+    <i class="red close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-delete-azo">
+        	<input type="hidden" name="function" value="delazo">
+        	<input type="hidden" name="id" id="azoid"> 
+            <div class="ui divided padded full grid">
+                <div class="row">
+                    <div class="ten wide column">
+                        <div class="grouped required fields">
+                            <label>Аъзоликдан ўчирилиш сабаби</label>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="aus" value="1">
+                                    <label>Ўз ҳоҳиши билан</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="aus" value="2">
+                                    <label>Фуқороликдан маҳрум бўлганда</label>                             
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="aus"  value="3">
+                                    <label>Хизмат вазифаси сабабли</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="aus"  value="4">
+                                    <label>Партяи Уставига риоя қилмаганлиги мабабли</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="aus"  value="5">
+                                    <label>Вафот этганда</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="six wide column">
+                        <div class="required field">
+                            <label>Аъзоликдан ўчирилган сана</label>
+                            <div class="ui input left icon">
+                                <i class="calendar icon"></i>
+                                <input name="audate" class="adate" type="text" placeholder="Аъзоликдан ўчирилган санасини киритинг">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui error message"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Ўчириш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+
+<div class="ui tiny modal" id="azolar-change">
+    <i class="red close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-change-azo">
+        	<input type="hidden" name="function" value="changeazo">
+        	<input type="hidden" name="id" id="azoid">           
+            <div class="required field">
+                <label>Кенгаш номи</label>
+                <div class="ui selection dropdown ken">
+                    <input type="hidden" name="kname" data-value="" />
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Кенгашни танланг</div>
+                    <div class="menu">
+                       {% for dis in dis %}
+                            <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+                       {% endfor %} 
+                    </div>
+                </div>
+            </div>
+            <div class="required field">
+                <label>БПТ номи</label>
+                <div class="ui selection dropdown bptname">
+                    <input type="hidden" name="bptname" data-value="" />
+                    <i class="dropdown icon"></i>
+                    <div class="default text">БПТни танланг</div>
+                    <div class="menu" id="bpt_item">
+                    </div>                  
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Ўтқазиш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+
+
+{% include "footer.html" %}

@@ -1,0 +1,35 @@
+{% include "header.html" %}
+<div class="ui middle aligned center aligned grid">
+    <div class="column">
+        <img class="logo" src="{{ defaults.images }}/logo_main.png">
+        {% if error != '' or sys.error != '' %}
+            <div class="ui left aligned small error message close">
+                <i class="close icon"></i>
+                <div class="ui left aligned header">
+                    {{ error }} {{ sys.error }}
+                </div>
+            </div>
+        {% endif %}
+        <form class="ui form" method="post">
+            <div class="ui secondary blue segment">
+                <h2 class="ui left aligned header">Авторизация</h2>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="login" placeholder="Логин" value="{{ login ? login }}" autofocus>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Пароль">
+                    </div>
+                </div>
+                <div class="ui right floated blue submit button">Войти</div>
+                <div class="field"></div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+</div>
+{% include "footer.html" %}

@@ -1,0 +1,94 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+    <div class="sixteen wide column">
+    	<div class="ui secondary menu">
+    		<div class="item">
+    			<h1 class="ui header">Список сервисов</h1>
+    		</div>
+     		<div class="right menu">
+     			<div class="item">
+     				<a href="services/export?merchant_id={{ merchant_id }}" class="ui green right icon labeled button"><i class="file excel outline icon"></i>Экспорт в Excel</a>
+     			</div>
+     			<div class="item">
+                    <div class="ui green right icon labeled button add"><i class="add sitemap icon"></i>Добавить новый сервис</div>
+     			</div>
+    		</div>
+        </div>
+        <table class="ui small blue celled table">
+            <thead>
+                <tr class="center aligned">
+                    <th>#</th>
+                    <th>Service ID</th>
+                    <th>Номер телефона</th>
+                    <th>Дата регистрации</th>
+                    <th>Статус</th>
+                    <th>Изменить</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for services in services %}
+                <tr class="center aligned">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ services.service_id }}</td>
+                    <td>{{ "+"~services.phone_number }}</td>
+                    <td>{{ services.reg_date }}</td>
+                    <td>{{ services.service_status }}</td>
+                    <td><div class="ui compact icon button edit" data-service-id="{{ services.service_id }}" data-phone-number="{{ services.phone_number|slice(-9) }}"><i class="write icon"></i></div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="ui small modal" id="service-add">
+    <i class="red close icon"></i>
+    <div class="header">Добавить новый сервис</div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-service-add">
+            <input type="hidden" name="op" value="add">
+            <div class="required field">
+                <label>Номер телефона</label>
+                <div class="ui labeled input">
+                    <div class="ui label">+998</div>
+                    <input type="text" name="phone_number" placeholder="Номер телефона">
+                </div>
+            </div>
+        </form>                
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Отмена</div>
+        <div class="ui positive right labeled icon button">Отправить<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+        <div class="ui text loader">Подождите...</div>
+    </div>
+</div>
+<div class="ui small modal" id="service-update">
+    <i class="red close icon"></i>
+    <div class="header">Изменить данные сервис</div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-service-update">
+            <input type="hidden" name="op" value="update">
+            <input type="hidden" name="service_id">
+            <div class="required field">
+                <label>Номер телефона</label>
+                <div class="ui labeled input">
+                    <div class="ui label">+998</div>
+                    <input type="text" name="service_phone_number" placeholder="Номер телефона">
+                </div>
+            </div>
+        </form>                
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Отмена</div>
+        <div class="ui positive right labeled icon button">Сохранить <i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+        <div class="ui text loader">Подождите...</div>
+    </div>
+</div>
+
+
+{% include "footer.html" %}

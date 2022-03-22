@@ -1,0 +1,11 @@
+<?php
+
+class Application_Controllers_Index_Module extends Application_Controllers_ModelResource {
+    public function indexAction() {
+        if($this->getSession()->isLoggedIn()) {
+        }
+    }
+}
+
+
+

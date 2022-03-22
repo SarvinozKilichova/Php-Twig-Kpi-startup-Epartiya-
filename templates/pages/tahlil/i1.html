@@ -1,0 +1,86 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+    <div class="main container">
+        <form class="ui form" method="post" id="form-register">
+            <div class="ui secondary stackable menu">
+                <div class="item">
+                    <h4 class="ui header"> {{ kname }} Кенгаши партия аъзоларининг партия билетга эгалиги (1-илова)</h4>
+                </div>
+                <div class="right menu">
+                    <div class="item">
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ begin_date }}">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ end_date }}">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+                            <i class="checkmark icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% if (i1 != '') %}    
+        <div class="ui inverted green menu">
+            <a class="item print desktop" data-print="i1"><i class="print icon"></i>Чоп қилиш</a>
+            <a class="item export" data-file="{{ kname }} Кенгаши партия аъзоларининг партия билетга эгалиги (1-илова)" data-export="i1"><i class="file excel outline icon"></i>Экспорт</a>
+            <a class="item diagram" data-number="1"><i class="signal icon"></i>Диаграма</a>
+        </div>      
+        <div class="wrapper">
+            <table class="ui small blue celled table" id="i1">
+                <thead>
+                    <tr class="center aligned">
+                        <th>№</th>
+    				    {% if role == 1 %}
+    				    	<th>Вилоят номи</th>
+    				    {% elseif role == 2 %}
+    				    	<th>Туман ва шаҳар номи</th>
+    				    {% elseif role == 3 %}
+    				    	<th>БПТ номи</th>
+    					{% endif %}
+                        <th>Партия аъзолари сони</th>
+                        <th class="1h">Партия билетга эга</th>
+                        <th class="1h">Партия билетга эга эмас</th>
+                    </tr>
+                </thead>    
+                <tbody>
+                    {% for i1 in i1 %}
+                    <tr class="center aligned">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ i1.kname }}</td>
+                        <td>{{ i1.count_azolar }}</td>
+                        <td>{{ i1.pbb }}</td>
+                        <td>{{ i1.pbb_off }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="center aligned">
+                        <th>Жами:</th>
+                        <th></th>
+                        <th>{{ total["count_azolar"] }}</th>
+                        <th class="1d">{{ total["pbb"] }}</th>
+                        <th class="1d">{{ total["pbb_off"] }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+	{% else %}
+    	{% include "empty.html" %}
+    {% endif %}    
+    <div class="ui small modal" id="diagram-info" style="text-align: center;">
+        <i class="red close icon"></i>
+        <div class="header">Кенгаш партия аъзоларининг партия билетларга эгалик кўрсаткичи (фоизларда)</div>
+        <div class="content">
+            <div id="diagram1" style="display: inline-block;"></div>
+        </div>
+    </div>
+{% include "footer.html" %}

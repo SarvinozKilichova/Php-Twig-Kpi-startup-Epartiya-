@@ -1,0 +1,294 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+        <div class="ui secondary stackable menu">
+            <div class="item">
+                <h4 class="ui header">{{ kname }} Кенгаши Ижроия Қўмитасининг таркиби тўғрисида маълумот (13-илова)</h4>
+            </div>
+        </div>
+        <div class="ui inverted green menu">
+            <a class="item add"><i class="add user icon"></i>Қўшиш</a>
+            <a class="item print desktop" data-print="i13"><i class="print icon"></i>Чоп қилиш</a>
+            <a class="item export" data-file="{{ kname }} Кенгаши Ижроия Қўмитасининг таркиби тўғрисида маълумот (13-илова)" data-export="i13"><i class="file excel outline icon"></i>Экспорт</a>
+        </div>      
+        <div class="wrapper">
+       {% include "message.html" %}
+       {% if (ken_iq != '') %} 
+            <table class="ui small blue celled table loading" id="i13">
+                <thead>
+                    <tr class="center aligned">
+                        <th>№</th>
+                        {% if role != 3 %}
+                        <th>Кенгаш номи</th>
+                        {% endif %}
+                        <th>Сайланган санаси ва органи</th>
+                        <th>Кенгаш аъзосининг Ф.И.Ш</th>
+                        <th>Иш жойи ва лавозими</th>
+                        <th>Қайси йўналиш бўйича масъул</th>
+                        <th>Кенгаш Ижроқум аъзосининг манзили</th>
+                        <th>Кенгаш аъзосининг телефон рақами, электрон пачта манзили</th>
+                        <th>Бошқарув ускуналари</th>
+                    </tr>
+                </thead>    
+                <tbody>
+                    {% for ken_iq in ken_iq %}
+                    <tr class="center aligned" id="{{ ken_iq.id }}">
+                        <td>{{ loop.index }}</td>
+                        {% if role != 3 %}
+                        <td>{% if ken_iq.kname == '' and role == 1 %} Республика Сиёсий  Кенгаш{% else %}{{ ken_iq.kname}} {% endif %}</td>
+                        {% endif %}
+                        <td>{{ ken_iq.ors }}</td>
+                        <td>{{ ken_iq.fullname }}</td>
+                        <td>{{ ken_iq.job }}</td>
+                        <td>{{ ken_iq.yun }}</td>
+                        <td>{{ ken_iq.address }}</td>
+                        <td>{{ ken_iq.telemail }}</td>
+	                    <td class="two wide">
+	                    	{% if role == 2 and ken_iq.tcode == '' or role == 3 or role ==1 and ken_iq.kcode == '' and ken_iq.tcode == '' %}
+                            <div 
+                                data-fullname="{{ ken_iq.f_name~' '~ken_iq.m_name }}"
+                                data-id="{{ ken_iq.id }}"
+                                data-ifname="{{ ken_iq.f_name }}"
+                                data-imname="{{ ken_iq.m_name }}"
+                                data-ilname="{{ ken_iq.l_name }}"
+                                data-iorgan="{{ ken_iq.organ }}"
+                                data-isdate="{{ ken_iq.sdate }}"
+                                data-iwork="{{ ken_iq.ishj }}"
+                                data-ilevel="{{ ken_iq.level }}"
+                                data-iyun="{{ ken_iq.yun }}"
+                                data-iaddress="{{ ken_iq.address }}" 
+                                data-itel="{{ ken_iq.tel }}"
+                                data-iemail="{{ ken_iq.email }}"                                                                 
+                                class="ui compact icon button edit"
+                                data-tooltip="Аъзо маълумотларини таҳрирлаш"
+                                data-position="top right">
+                                <i class="write icon"></i>
+                            </div>
+                            <div 
+                                data-fullname="{{ ken_iq.f_name~' '~ken_iq.m_name }}"
+                                data-id="{{ ken_iq.id }}"
+                                class="ui compact icon button del"
+                                data-tooltip="Аъзоликдан ўчириш"
+                                data-position="top right">
+                                <i class="remove circle icon"></i>
+                            </div>                      
+	                    </td>
+	                    {% endif %}
+	                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+    		{% include "empty.html" %}
+    	{% endif %}
+        </div>
+    </div>
+<div class="ui data modal" id="modal-edit">
+    <i class="red close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <div class="centered ten wide column">
+            <form class="ui form" method="post" id="form-edit">
+            <input type="hidden" name="function" value="editkeniq">
+        	<input type="hidden" name="editid" id="id">
+          		<div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Умуимй маълумотлари</p> 
+                    </div>                                  
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Фамилияси</label>
+                            <input type="text" name="fname" class="fname" placeholder="Фамилиясини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Исми</label>
+                            <input type="text" name="mname" placeholder="Исмини киритинг">
+                        </div>
+                        <div class="field">
+                            <label>Отасининг исми</label>
+                            <input type="text" name="lname" placeholder="Отасининг исмини киритинг">
+                        </div>                        
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Иш жойи</label>
+                            <input type="text" name="work"  placeholder="Иш жойини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Лавозими</label>
+                            <input type="text" name="level" placeholder="Лавозимини киритинг">
+                        </div>
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class="field">
+                        <div class="ui segment ">   
+                            <div class="ui top attached label">
+                                <p>Партиявий маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Сайланган санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="date" name="sdate" type="text" placeholder="Сайланган санасини киритинг">
+                                </div>
+                            </div>                             
+                            <div class="required field">
+                                <label>Сайланган органи</label>
+                                <input type="text" name="organ" >
+                            </div>
+                            <div class="required field">
+                                <label>Маъсул йўналиши</label>
+                                <input type="text" name="yun">
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="required field">
+                        <div class="ui segment">    
+                            <div class="ui top attached label">
+                                <p>Яшаш манзили маълумотлари</p> 
+                            </div>      
+                            <div class=" required field">
+                                <label>Яшаш манзили</label>
+                                <textarea type="text" name="address" rows="3"  cols="50" placeholder="Яшаш манзилини киритинг"></textarea>
+                            </div>                                              
+                            <div class="required field">
+                                <label>Телефон рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="tel" maxlength=9 size=9 placeholder="Телефон рақамини киритинг">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Электрон почтаси</label>
+                                <input type="email" name="email" placeholder="Электрон почтани киритинг">
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Таҳрирлаш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+<div class="ui data modal" id="modal-add">
+    <i class="red close icon"></i>
+    <div class="header">Аъзо қўшиш</div>
+    <div class="content">
+        <div class="centered ten wide column">
+            <form class="ui form" method="post" id="form-add">
+            <input type="hidden" name="function" value="addkeniq">
+          		<div class="ui segment ">
+                    <div class="ui top attached label">
+                        <p>Умуимй маълумотлари</p> 
+                    </div>                                  
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Фамилияси</label>
+                            <input type="text" name="fname" class="fname" placeholder="Фамилиясини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Исми</label>
+                            <input type="text" name="mname" placeholder="Исмини киритинг">
+                        </div>
+                        <div class="field">
+                            <label>Отасининг исми</label>
+                            <input type="text" name="lname" placeholder="Отасининг исмини киритинг">
+                        </div>                        
+                    </div>
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Иш жойи</label>
+                            <input type="text" name="work"  placeholder="Иш жойини киритинг">
+                        </div>
+                        <div class="required field">
+                            <label>Лавозими</label>
+                            <input type="text" name="level" placeholder="Лавозимини киритинг">
+                        </div>
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class="field">
+                        <div class="ui segment ">   
+                            <div class="ui top attached label">
+                                <p>Партиявий маълумотлари</p> 
+                            </div>
+                            <div class="required field">
+                                <label>Сайланган санаси</label>
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input class="date" name="sdate" type="text" placeholder="Сайланган санасини киритинг">
+                                </div>
+                            </div>                             
+                            <div class="required field">
+                                <label>Сайланган органи</label>
+                                <input type="text" name="organ" >
+                            </div>
+                            <div class="required field">
+                                <label>Маъсул йўналиши</label>
+                                <input type="text" name="yun">
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="required field">
+                        <div class="ui segment">    
+                            <div class="ui top attached label">
+                                <p>Яшаш манзили маълумотлари</p> 
+                            </div>      
+                            <div class="required field">
+                                <label>Яшаш манзили</label>
+                                <textarea type="text" name="address" rows="3"  cols="50" placeholder="Яшаш манзилини киритинг"></textarea>
+                            </div>                                              
+                            <div class="required field">
+                                <label>Телефон рақами</label>
+                                <div class="ui fluid labeled input">
+                                    <div class="ui label">+998</div>
+                                    <input type="text" name="tel" maxlength=9 size=9 placeholder="Телефон рақамини киритинг">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Электрон почтаси</label>
+                                <input type="email" name="email" placeholder="Электрон почтани киритинг">
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Ёпиш</div>
+        <div class="ui positive right labeled icon button">Қўшиш<i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	</div>
+</div>
+<div class="ui small test data modal" id="modal-del">
+        <i class="red close icon"></i>
+        <div class="header"></div>
+        <div class="content">
+            <form method="post" class="ui form" id="form-del">
+            <input type="hidden" name="function" value="delkeniq">
+        	<input type="hidden" name="id" id="id">   
+                    <p>Сиз ҳақиқатдан ҳам ушбу<span class="span"></span> аьзоликдан ўчиришни ҳоҳлайсизми ?</p>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui deny button">Йўқ</div>
+            <div class="ui positive right labeled icon button">Ха<i class="save icon"></i></div>
+        </div>
+        <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Илтимос кутинг...</div>
+	    </div>
+</div>
+{% include "footer.html" %}
+

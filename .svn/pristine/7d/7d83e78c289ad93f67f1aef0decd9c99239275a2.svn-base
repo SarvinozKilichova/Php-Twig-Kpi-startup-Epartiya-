@@ -1,0 +1,120 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+    <div class="sixteen wide column">
+    	<div class="ui secondary menu">
+    		<div class="item">
+    			<h1 class="ui header">Список поставщиков</h1>
+    		</div>
+     		<div class="right menu">
+     			<div class="item">
+     				<a href="merchants/export" class="ui green right icon labeled button"><i class="file excel outline icon"></i>Экспорт в Excel</a>
+     			</div>
+     			<div class="item">
+     				<a href="merchants/register" class="ui green right icon labeled button"><i class="add user icon"></i> Регистрация поставщиков</a>
+     			</div>
+    		</div>
+    	</div>
+		<table class="ui small blue celled table">
+    		<thead>
+    			<tr class="center aligned">
+    				<th>#</th>
+    				<th>Service ID</th>
+    				<th>Поставщик</th>
+    				<th>Банк</th>
+    				<th>Номер телефона</th>
+    				<th>Дата регистрации</th>
+    				<th>Статус</th>
+    				<th>Управления</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			{% for merchant in merchants %}
+    				<tr class="center aligned">
+	    				<td>{{ loop.index }}</td>
+	    				<td>{{ merchant.service_id }}</td>
+	    				<td><b>{{ merchant.short_name}}</b><br>{{merchant.name }}</td>
+	    				<td>{{ merchant.bank_name }}<br>{{ "МФО: "~merchant.mfo }}</td>
+	    				<td>{{ "+"~merchant.phone_number }}</td>
+	    				<td>{{ merchant.dt_load|date('d.m.Y H:i:s') }}</td>
+	    				<td>{{ merchant.merch_status }}</td>
+	    				<td>
+		    				<div 
+			    				data-service-id="{{ merchant.service_id }}" 
+			    				data-name="{{ merchant.name }}"
+			    				data-short-name="{{ merchant.short_name }}" 
+			    				data-boss-name="{{ merchant.boss_name }}"
+			    				data-boss-type="{{ merchant.boss_type }}" 
+			    				data-address="{{ merchant.address }}"
+			    				data-address-legal="{{ merchant.address_legal }}" 
+			    				data-bank-name="{{ merchant.bank_name }}"
+			    				data-mfo="{{ merchant.mfo }}" 
+			    				data-mfo-transit="{{ merchant.mfo_transit }}"
+			    				data-contract-number="{{ merchant.contract_number }}" 
+			    				data-contract-date="{{ merchant.contract_date }}"
+			    				data-inn="{{ merchant.inn }}" 
+			    				data-accno="{{ merchant.accno }}"
+			    				data-accno-transit="{{ merchant.accno_transit }}"
+			    				data-epos-merchant-id="{{ merchant.epos_merchant_id }}" 
+			    				data-epos-terminal-id="{{ merchant.epos_terminal_id }}"
+			    				data-phone-number="{{ merchant.phone_number }}" 
+			    				data-region-name="{{ merchant.region_name }}"
+			    				data-dt-load="{{ merchant.dt_load }}" 
+			    				data-merch-status="{{ merchant.merch_status }}"
+			    				class="ui compact icon button info">
+		    					<i class="info icon"></i>
+		    				</div>
+							<a class="ui compact icon button" href="services?merchant_id={{ merchant.merchant_id }}" target="_blank"><i class="sitemap icon"></i></a>
+							<div class="ui compact icon button edit" data-service-id="{{ merchant.service_id }}" data-phone-number="{{ merchant.phone_number|slice(-9) }}"><i class="write icon"></i></div>
+							<div class="ui compact icon button construc"><i class="unlock icon"></i></div>
+	    				</td>
+	    			</tr>
+    			{% endfor %}
+    		</tbody>
+    	</table>
+    </div>
+</div>
+<div class="ui small modal" id="merchant-info">
+    <i class="red close icon"></i>
+    <div class="header">Информация о поставщике</div>
+    <div class="content">
+        <table class="ui small celled definition table">
+        	<tbody>
+                {% for field, name in merchantFields %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td id="{{ field }}"></td>
+                    </tr>
+                {% endfor %}
+        	</tbody>
+        </table>                
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Закрыть</div>
+    </div>
+</div>
+<div class="ui small modal" id="merchant-update">
+    <i class="red close icon"></i>
+    <div class="header">Изменить данные поставщика</div>
+    <div class="content">
+        <form method="post" class="ui form" id="form-merchant-update">
+			<input type="hidden" name="op" value="update">
+			<input type="hidden" name="service_id">
+    		<div class="required field">
+				<label>Номер телефона</label>
+				<div class="ui labeled input">
+					<div class="ui label">+998</div>
+					<input type="text" name="phone_number" placeholder="Номер телефона">
+				</div>
+			</div>
+        </form>                
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Отмена</div>
+        <div class="ui positive right labeled icon button">Сохранить <i class="save icon"></i></div>
+    </div>
+    <div class="ui inverted dimmer modal_loader">
+	    <div class="ui text loader">Подождите...</div>
+	</div>
+</div>
+{% include "footer.html" %}

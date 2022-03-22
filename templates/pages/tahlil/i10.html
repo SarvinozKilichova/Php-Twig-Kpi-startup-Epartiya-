@@ -1,0 +1,123 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form class="ui form" method="post" id="form-register">
+        <div class="ui secondary stackable menu">
+            <div class="item">
+                <h4 class="ui header"> {{ kname }} Кенгашининг БПТдаги аъзолар сони тўғрисида маълумот (10-илова)</h4>
+            </div>
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ begin_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ end_date }}">
+                    </div>
+                </div>
+                <div class="item">
+                    <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+                        <i class="checkmark icon"></i>
+                    </button>
+                </div> 
+            </div>
+        </div>
+    </form>
+
+    {% if (i10 != null) %}	
+        <div class="ui inverted green menu">
+            <a class="item print desktop" data-print="i10"><i class="print icon"></i>Чоп қилиш</a>
+            <a class="item export" data-file="{{ kname }} Кенгашининг БПТдаги сони тўғрисида маълумот (10-илова)" data-export="i10"><i class="file excel outline icon"></i>Экспорт</a>
+        </div>      
+        <div class="wrapper">
+            <table class="ui small blue celled structured table" id="i10">
+                <thead>
+                    <tr class="center aligned">
+                        <th rowspan="2">№</th>
+					    {% if role == 1 %}
+					    	<th rowspan="2">Вилоят номи</th>
+					    {% elseif role == 2 %}
+					    	<th rowspan="2">Туман ва шаҳар номи</th>
+					    {% elseif role == 3 %}
+					    	<th rowspan="2">БПТ номи</th>
+						{% endif %}                        
+                        <th rowspan="2">Аъзолар сони</th>
+                        <th rowspan="2">БПТ сони</th>
+                        <th colspan="4">Жумладан, улардан</th>
+                        <th colspan="7">Тузилиш шакли</th>
+                        <th colspan="2">{{ bpt_sana }} йилдаги ҳаракати</th>
+                    </tr>
+                    <tr class="center aligned">
+                        <th>5 нафар аъзогача</th>
+                        <th>6-15 нафар аъзогача</th>
+                        <th>16-50 нафар аъзогача</th>
+                        <th>51 нафардан ортиқ аъзо</th>
+                        <th>маҳалла фуқоролар йиғинида</th>
+                        <th>Нодавлат нотижорат ташкилотда</th>
+                        <th>Фирма ва хусусий корхонада</th>
+                        <th>Қишлоқ хҳжалик соҳасида</th>
+                        <th>Йирик саноат корхонада</th>
+                        <th>Хизмат кўрсатиш соҳасида</th>
+                        <th>Бошқалар</th>
+                        <th>Ташкил этилган</th>
+                        <th>Тарқатилган</th>
+                    </tr>
+                </thead>    
+                <tbody>
+                    {% for i10 in i10 %}
+                    <tr class="center aligned">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ i10.kname }}</td>
+                        <td>{{ i10.count_azolar }}</td>
+                        <td>{{ i10.count_bpt }}</td>
+                        <td>{{ i10.bpt_5 }}</td>
+                        <td>{{ i10.bpt_15 }}</td>
+                        <td>{{ i10.bpt_50 }}</td>
+                        <td>{{ i10.bpt_50_large }}</td>
+                        <td>{{ i10.mfy }}</td>
+                        <td>{{ i10.nnt }}</td>
+                        <td>{{ i10.fxk }}</td>
+                        <td>{{ i10.qxs }}</td>
+                        <td>{{ i10.ysk }}</td>
+                        <td>{{ i10.xks }}</td>
+                        <td>{{ i10.other }}</td>
+                        <td>{{ i10.bpt_osana }}</td>
+                        <td>{{ i10.bpt_tsana }}</td>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="center aligned">
+                        <th>Жами:</th>
+                        <th></th>
+                        <th>{{ total["count_azolar"] }}</th>
+                        <th>{{ total["count_bpt"] }}</th>
+                        <th>{{ total["bpt_5"] }}</th>
+                        <th>{{ total["bpt_15"] }}</th>
+                        <th>{{ total["bpt_50"] }}</th>
+                        <th>{{ total["bpt_50_large"] }}</th>
+                        <th>{{ total["mfy"] }}</th>
+                        <th>{{ total["nnt"] }}</th>
+                        <th>{{ total["fxk"] }}</th>
+                        <th>{{ total["qxs"] }}</th>
+                        <th>{{ total["ysk"] }}</th>
+                        <th>{{ total["xks"] }}</th>
+                        <th>{{ total["other"] }}</th>
+                        <th>{{ total["bpt_osana"] }}</th>
+                        <th>{{ total["bpt_tsana"] }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+    {% else %}
+    	{% include "empty.html" %}
+    {% endif %}
+    </div>
+{% include "footer.html" %}
+

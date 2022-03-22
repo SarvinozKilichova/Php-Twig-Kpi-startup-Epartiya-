@@ -1,0 +1,26 @@
+$(function() {
+    $('.ui.form')
+        .form({
+            fields: {
+                email: {
+                    identifier  : 'login',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Логин не введен'
+                        }
+                    ]
+                },
+                password: {
+                    identifier  : 'password',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Пароль не введен'
+                        }
+                    ]
+                }
+            }
+        })
+    ;
+});

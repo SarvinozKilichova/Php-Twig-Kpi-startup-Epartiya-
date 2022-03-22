@@ -1,0 +1,87 @@
+$(function() {
+    $('.modal').modal({
+        autofocus: false,
+        transition: 'fade',
+        duration: 25
+    });
+    $('.modal.logout')
+        .modal({
+            onApprove : function() {
+                App.redirect('/utils/logout');
+            }
+        })
+        .modal('setting', 'transition', 'scale')
+        .modal('attach events', '#logout', 'show')
+    ;
+    $('input.date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('input.time').timepicker({
+        showDuration: false,
+        disableTextInput: true,
+        timeFormat: 'H:i',
+        minTime: '06:00',
+        maxTime: '23:30'
+    });
+    $('.ui.checkbox').checkbox();
+    $('.ui.accordion').accordion();
+    $('.ui.dropdown').dropdown();
+    $('.ui.message .close').on('click', function() {
+        $(this).closest('.message').transition('fade');
+        $.ajax({
+            url: 'utils/unset',
+            method: 'post',
+            success: function() {
+            }
+        });
+    });
+    /* Semantic UI ~ Form Validation ~ Custom Rules */
+    $.fn.form.settings.rules.mfo = function(value) {
+        return (value.substr(0, 1) == '0');
+    };
+    $.fn.form.settings.rules.phone_number = function(value) {
+        $code = ['90', '91', '93', '94', '95', '97', '98', '99'];
+        return ($code.indexOf(value.substr(0, 2)) >= 0);
+    };
+    /* Semantic UI ~ Form Validation ~ Custom Rules */
+
+    /* Настройки Ajax */
+    var
+        $body_loader = $('#body-loader'),
+        $_modal_loader = $('.modal_loader')
+    ;
+    $(document).keypress(function(e) {
+        if(e.which == 13) {
+            if($body_loader.hasClass('active') || $_modal_loader.hasClass('active')) {
+                return false;
+            }
+        }
+    });
+    $.ajaxSetup({
+        type: 'post',
+        dataType: 'json'
+    });
+    $(document).ajaxSend(function(evt, request, settings) {
+        if($('.ui.modal').is('.visible')) {
+            $_modal_loader.addClass('active');
+        } else {
+            $body_loader.addClass('active');
+        }
+    });
+    $(document).ajaxStop(function() {
+        if($('.ui.modal').is('.visible')) {
+            $_modal_loader.removeClass('active');
+        } else {
+            $body_loader.removeClass('active');
+        }
+    });
+    $(document).ajaxSuccess(function(event, jqxhr, settings) {
+        var result = JSON.parse(jqxhr.responseText);
+        if(result.error) {
+            alertify.error(result.error);
+        }
+    });
+    /* Настройки Ajax */
+});

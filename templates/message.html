@@ -1,0 +1,16 @@
+{% if sys.success != "" or success != "" %}
+    <div class="ui fluid small success message close">
+        <i class="close icon"></i>
+        <div class="header">
+            <p>{{ sys.success }} {{ success }}</p>
+        </div>
+    </div>
+{% endif %}
+{% if sys.error != "" or error != "" %}
+    <div class="ui fluid small error message close">
+        <i class="close icon"></i>
+        <div class="header">
+            <p>{{ sys.error }} {{ error }}</p>
+        </div>
+    </div>
+{% endif %}

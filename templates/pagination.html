@@ -1,0 +1,53 @@
+			<div class="ui stackable four column middle aligned grid">
+			  	<div class="left floated left aligned three wide column">
+			        {% set from = (filter.page - 1) * filter.limit + 1 %}
+			        {% set to = (filter.page != count_pages ? ((filter.page - 1) * filter.limit + filter.limit):count_records) %}
+					<div class="ui floating icon dropdown button" id="limit">
+					    <input type="hidden" name="limit" value="{{ filter.limit }}">
+					    <i class="dropdown icon"></i>
+					    <div class="default text">{{ filter.limit }}</div>
+					    <div class="menu">
+					        <div class="item" data-value="25">25</div>
+					        <div class="item" data-value="50">50</div>
+					        <div class="item" data-value="75">75</div>
+					        <div class="item" data-value="100">100</div>
+					    </div>
+					</div>
+			  	</div>
+			    <div class="center floated center aligned eight wide column">
+					<div class="ui pagination menu">
+					    {% if count_pages > 7 %}
+					        {% if filter.page <= 3 %}
+					        	{% for i in 0..3 %}
+							        <a class="{% if filter.page == i + 1 %} active {% endif %} item page" data-id="{{ i + 1 }}">{{ i + 1 }}</a>
+					        	{% endfor %}
+                     			<div class="disabled item">...</div>
+                     			<a class="item page" data-id="{{ count_pages }}">{{ count_pages }}</a>
+					        {% else %}
+						    	{% if count_pages-3 < filter.page %}
+                        			<a class="item page" data-id="1">1</a>
+                        			<div class="disabled item">...</div>
+                        			{% for i in count_pages-4..count_pages-1 %}
+                        				<a class="{% if filter.page == i + 1 %} active {% endif %} item page" data-id="{{ i + 1 }}">{{ i + 1 }}</a>
+                        			{% endfor %}
+						        {% else %}
+		                            <a class="item page" data-id="1">1</a>
+		                            <div class="disabled item">...</div>
+		                            <a class="item page" data-id="{{ filter.page - 1 }}">{{ filter.page - 1 }}</a>
+		                            <a class="active item page" data-id="{{ filter.page }}">{{ filter.page }}</a>
+		                            <a class="item page" data-id="{{ filter.page + 1 }}">{{ filter.page + 1 }}</a>
+		                            <div class="disabled item">...</div>
+		                            <a class="item page" data-id="{{ count_pages }}">{{ count_pages }}</a>
+						    	{% endif %}
+					        {% endif %}				
+					    {% else %}						
+					    	{% for i in 0..count_pages-1 %}
+					    		<a class="{% if filter.page == i + 1 %} active {% endif %} item page" data-id="{{ i + 1 }}">{{ i + 1 }}</a>
+							{% endfor %}
+					    {% endif %}
+					</div>
+			    </div>
+			    <div class="right floated right aligned four wide column">
+			    	<h4 class="ui header">Кўрсатилмоқда: {{ from~"-"~to }} (Жами: {{ count_records }})</h4>
+			  	</div>
+			</div>

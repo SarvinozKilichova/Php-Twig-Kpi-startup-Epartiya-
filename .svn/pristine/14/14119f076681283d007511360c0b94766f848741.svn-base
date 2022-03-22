@@ -1,0 +1,117 @@
+<?php
+
+class Application_Controllers_Services_Module extends Application_Controllers_ModelResource {
+
+	public function __construct() {
+        $this->serviceModel = Application_App::getModel('service');
+		$this->serviceFields = array(
+			"service_id" => "Service ID",
+			"phone_number" => "Номер телефона",
+			"reg_date" => "Дата регистрации",
+			"service_status" => "Статус",
+		);
+	}
+    
+    public function indexAction() {
+        if($this->getSession()->isLoggedIn()) {
+        	$data['merchant_id'] = $this->getRequest()->getParam('merchant_id');
+        	if ($this->getRequest()->isPost()) {
+                $op = $this->getRequest()->getParam('op');
+                if ($op == 'add') {
+                    $phone_number = $this->getRequest()->getParam('phone_number');
+                    $result = $this->serviceModel->addService($data['merchant_id'], '998'.$phone_number);
+                    if ($result['error'] == 0 || $result['success'] == 1) {
+                        $response = ['success' => 'Cервис успешно добавлен'];
+                    } else {
+                        $response = ['error' => $result['error_note']];
+                    }
+                    exit(json_encode($response));
+                }
+                if ($op == 'update') {
+                    $service_id = $this->getRequest()->getParam('service_id');
+                    $service_phone_number = $this->getRequest()->getParam('service_phone_number');
+                    $service_result = $this->serviceModel->updateService($service_id, '998'.$service_phone_number);
+                    if($service_result[0]['error'] == '0') {
+                        $service_response = ['success' => 'Изменения сохранены'];
+                    } else {
+                        $service_response = ['error' => $service_result[0]['error_note']];
+                    }
+                    exit(json_encode($service_response));
+                }
+        	}
+        }
+        $data['services'] = $this->serviceModel->getServices($data['merchant_id']);
+		return $data;
+    }
+
+    public function exportAction() {
+        if ($this->getSession()->isLoggedIn()) {
+        	$merchant_id = $this->getRequest()->getParam('merchant_id');
+            $data['services'] = $this->serviceModel->getServices($merchant_id);
+
+            // Create new PHPExcel object
+            $objPHPExcel = new PHPExcel();  
+
+            $sheet = $objPHPExcel->setActiveSheetIndex(0);
+
+            // Add some data
+            $sheet->setTitle("Список сервисов");
+            foreach (array_values($this->serviceFields) as $k => $v) {
+                $sheet->setCellValue(chr(65+$k).'1', $v);
+            }
+            for ($i = 0; $i < sizeof($data['services']); $i++) {
+                foreach (array_keys($this->serviceFields) as $k => $v) {
+                    $field = $this->getHelper()->to_camel_case($v);
+                    $sheet->setCellValue(chr(65+$k).($i + 2), $data['services'][$i][$field]);
+                }
+            }
+
+            // Set columns width
+            for ($i = 'A'; $i <= 'D'; $i++) { 
+                $sheet->getColumnDimension($i)->setWidth(20);
+            }
+
+            // Set styles
+            $sheet->getStyle("A1:D1")->applyFromArray(
+                array(
+                    "font" => array(
+                        "bold" => true
+                    )
+                )
+            );
+            $sheet->getStyle("A1:D".(sizeof($data['services']) + 1))->applyFromArray(
+                array(
+                    "alignment" => array(
+                        "horizontal" => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                        "vertical" => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                        "wrap" => true
+                    ),
+                    "borders" => array(
+                        "allborders" => array(
+                            "style" => PHPExcel_Style_Border::BORDER_THIN
+                        )
+                    )
+                )
+            );
+
+            // Redirect output to a client’s web browser (Excel5)
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="Список сервисов.xls"');
+            header('Cache-Control: max-age=0');
+            // If you're serving to IE 9, then the following may be needed
+            header('Cache-Control: max-age=1');
+
+            // If you're serving to IE over SSL, then the following may be needed
+            header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+            header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+            header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+            header ('Pragma: public'); // HTTP/1.0
+
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+            $objWriter->save('php://output');
+            exit;
+        }
+    }
+
+
+}

@@ -1,0 +1,32 @@
+<div class="ui fixed stackable inverted blue menu">
+    <a class="{% if sys.page == '/' %} active {% endif %} item" href="/">
+    	<i class="home icon"></i><span>Главная</span>
+    </a>
+    <a class="{% if sys.page == 'merchants' %} active {% endif %} item" href="/merchants">
+        <i class="users icon"></i><span>Поставщики</span>
+    </a>
+    <div class="right menu">
+        <a class="item" id="logout">
+            <i class="sign out icon"></i><span>Выйти</span>
+        </a>
+    </div>
+</div>
+<div class="ui inverted modals page transition hidden">
+    <div class="ui small modal transition hidden logout">
+        <i class="red close icon"></i>
+        <div class="header">
+            Выйти
+        </div>
+        <div class="content">
+            <p>Вы действительно хотите выйти?</p>
+        </div>
+        <div class="actions">
+            <div class="ui negative button">
+                Нет
+            </div>
+            <div class="ui positive right labeled icon button">
+                Да<i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</div>

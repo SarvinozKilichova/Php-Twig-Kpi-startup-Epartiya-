@@ -1,0 +1,814 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+<div class="main container">
+	<form id="form_filter" method="POST">
+		<input type="hidden" name="function" value="setFilter">
+		<input type="hidden" name="page" id="page" value="{{ filter.page }}">
+        <div class="ui secondary stackable menu">
+	        <div class="item">
+	            <h4 class="ui header azolar">{{ kname }} Кенгаши БПТ рўйхати</h4>
+	        </div>
+	        {% if role == 1 %}
+		        <div class="right menu">
+		            <div class="item">
+		                <div class="ui input left icon">
+		                    <i class="calendar icon"></i>
+		                    <input class="sana" type="text" name="begin_date" placeholder="Санадан" value="{{ filter.begin_date }}">
+		                </div>
+		            </div>
+		            <div class="item">
+		                <div class="ui input left icon">
+		                    <i class="calendar icon"></i>
+		                    <input class="sana" type="text" name="end_date" placeholder="Санагача" value="{{ filter.end_date }}">
+		                </div>
+		            </div>
+		            <div class="item">
+		                <button class="ui icon button" type="submit" data-tooltip="Бажариш" data-position="bottom right">
+		                    <i class="checkmark icon"></i>
+		                </button>
+		            </div>
+		        </div>
+     		{% endif  %}
+        </div>
+
+        <div class="ui inverted green stackable menu">
+	        {% if role != 1 %}
+	            <a class="item" id="bptadd">
+	            	<i class="add user icon"></i>БПТ қўшиш
+	           	</a>
+	        {% endif %}
+            <a class="item print desktop" data-print="bpt_table">
+            	<i class="print icon"></i>Чоп қилиш
+            </a>
+            <a class="item export" data-file="БПТ рўйхати" data-export="bpt_table">
+            	<i class="file excel outline icon"></i>Экспорт
+            </a>
+	        <div class="right menu">
+	        	<div class="item">
+			        <div class="ui icon input">
+			            <input placeholder="Излаш..." name="search" type="text" id="search" value="{{ filter.search != 'NULL' ? filter.search:'' }}"><i class="search icon"></i>
+			        </div>
+		         </div>
+	        	{% if role == 2 %}
+	            	<div class="ui input dropdown item">
+	                    <div class="ui selection dropdown" id="dis">
+	                        <input name="dis" type="hidden" value="{{ filter.tcode }}">
+	                        <i class="dropdown icon"></i>
+	                        <div class="default text">Кенгашни танланг</div>
+	                        <div class="menu">
+	                            <div class="item" data-value="0">Барчаси</div> 
+	                            <div class="divider"></div>  
+	                            {% for dis in dis %}
+	                                <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+	                            {% endfor %}
+	                        </div>
+	                    </div>
+	            	</div>
+	        	{% endif %}
+	           	{% if role == 1 %}
+		            <div class="ui dropdown item  input">
+			            <div class="ui selection dropdown" id="regions">
+			                <input type="hidden" name="regions" value="{{ filter.kcode }}">
+			                <i class="dropdown icon"></i>
+			                <div class="default text">Вилоятини танланг</div>
+			                <div class="menu">
+			                	<div class="item" data-value="0">Барчаси</div>
+			                    {% for regions in regions %}
+			                        <div class="item" data-value="{{ regions.code }}">{{ regions.name }}</div>
+			                   	{% endfor %}                               
+			                </div>
+			            </div>
+		        	</div>
+	        	{% endif %}
+	        </div>
+        </div>   
+        {% include "message.html" %}
+		{% if (bpt != null) %}   
+	<div class="dimmable">
+        <div class="ui inverted dimmer" id="bpt-loader">
+            <div class="ui text inline loader">Маълумотлар қайта юкланмоқда илтимос кутинг...</div>
+        </div>
+        <div class="sticky-table">
+            <table class="ui small blue celled table" id="bpt_table">
+            <thead>
+                <tr class="center aligned">
+                    <th>№</th>
+                    <th>Бошланғич партия ташкилоти номи</th>
+                    <th>Туман (шаҳар) Кенгаши номи</th>
+                    <th>Бошланғич партия ташкилоти жойлфшган жойи</th>
+                    <th>Бошланғич партия ташкилотига бириктирилган аъзолар сони</th>
+                    <th>Бошланғич партия ташкилоти гувоҳнома рақами</th>
+                    <th>Бошланғич партия ташкилоти жойлашган манзил</th>
+                    <th>Бошланғич партия ташкилоти ташкил топган сана</th>
+                    <th>Қўшилган санаси</th>   
+                    <th>Бошқарув ускуналари</th> 
+                </tr>
+            </thead>    
+            <tbody>
+                {% for bpt in bpt %}
+                  <tr class=" {% if role != 1 %} message  {% endif %}  center aligned {% if bpt.count_azolar < 5 %} negative {% endif %}">
+
+                    <td>{{ (filter.page - 1) * filter.limit + loop.index }}{% if bpt.count_azolar < 3 %} <i class="attention icon" data-content="Ушбу БПТ таркибидаги аъзолар 3 нафардан кам. Илтимос ушбу БПТ ҳисобига аъзо қушинг." data-variation="wide"></i> {% endif %} </td>
+                    <td>{{ bpt.bptname }}</td>
+                    <td>{{ bpt.bpt_kcode }}</td>
+                    <td>{{ bpt.bptjj }}</td>
+                    <td>{{ bpt.count_azolar }}</td>
+                    <td>{{ bpt.bptgr_full}}</td>
+                    <td>{{ bpt.bptjman }}</td>
+                    <td>{{ bpt.bptosana }}</td>
+                    <td>{{ bpt.iinsert_datetime }}</td>                 
+                    
+                    <td class="two wide">
+                    {% if role == 1 %}
+                        <div
+                        data-id="{{ bpt.id }}"
+                        data-ikname="{{ bpt.kname }}"
+                        data-ibpt="{{ bpt.bptname }}"
+                        data-ibptpp="{{ bpt.bptjj }}"
+                        data-ibptpa="{{ bpt.bptjman }}"
+                        data-ibptgnum="{{ bpt.bptgr }}"
+                        data-ibptdate="{{ bpt.bptosana }}" 
+                        data-dbptorg="{{ bpt.bpt_organization }}"
+                        class="ui compact icon button bptedit" 
+                        data-tooltip="БПТ маълумотларини таҳрирлаш" 
+                        data-position="bottom right">
+                        <i class="write icon"></i> 
+                        </div>
+
+                        <div 
+                        data-bptid="{{ bpt.idinsert }}"
+                        class="ui compact icon button bptchange"  
+                        data-tooltip="БПТ раисини ўзгартириш" 
+                        data-position="bottom right">
+                        <i class="user icon"></i> 
+                        </div>
+                        {% endif %}
+                        {% if role != 1 %}
+                	    <div 
+	                    data-bptname="{{ bpt.bptname }}"
+	                    data-id="{{ bpt.id }}"
+	                    class="ui compact icon button del"
+	                    data-tooltip="БПТ тугатиш"
+	                    data-position="bottom right">
+	                    <i class="remove circle icon"></i>
+	                    </div>
+	                    {% endif %}
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody> 
+        </table>
+        </div>
+        <div class="ui segment">
+         	{% include "pagination.html" %}
+        </div>        
+    </div>
+    {% else %}
+    	{% include "empty.html" %}
+    {% endif %}
+</form>   
+</div>
+	{% if role != 1 %}
+		<div class="ui modal" id="bpt-add">
+		    <i class="red close icon"></i>
+		    <div class="header">БПТ қўшиш</div>
+		    <div class="content">
+		        <div class="centered ten wide column">
+		            <form class="ui form" method="post" id="form-bpt-add">
+		            <input type="hidden" name="function" value="addbpt"> 
+		            <div class="ui segment ">
+		                    <div class="ui top attached label">
+		                        <p>БПТ маьлумотлари</p> 
+		                    </div>                                  
+		                    <div class="{% if role == 2 %} two {% elseif (role == 3) %} three {% endif %} fields">  
+		                    {% if role == 2 %}                     
+		                        <div class="required field">
+		                                <label>Кенгаш номи</label>
+		                                <div class="ui selection dropdown ken">
+		                                    <input type="hidden" name="kname" data-form="bpt-add" data-value="" />
+		                                    <i class="dropdown icon"></i>
+		                                    <div class="default text">Кенгашни танланг</div>
+		                                    <div class="menu">
+				                               {% for dis in dis %}
+				                                    <div class="item" data-value="{{ loop.index }}">{{ dis.name }}</div>
+				                               {% endfor %} 
+		                                    </div>                                          
+		                                </div>
+		                            </div>
+		                    {% endif %}
+		                        <div class="required field">
+		                            <label>БПТ номи</label>
+		                            <input type="text" name="bptname" placeholder="БПТ номини киритинг">
+		                        </div>                        
+		                        <div class="required field">
+		                            <label>БПТ жойлашган ташкилот</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="bptorg">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">БПТ жойлашган ташкилот</div>
+		                                <div class="menu">
+			                               {% for bpt_organizations in bpt_organizations %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ bpt_organizations.name }}</div>
+			                               {% endfor %}
+		                               </div>
+		                            </div>                           
+		                        </div>
+		                    </div>
+		                    <div class="three fields">
+		                     	<div class="required field">
+		                            <label>БПТ жойлашган жойи</label>
+		                            <div class="ui icon input" >
+		                                <input type="text" name="bptpp" placeholder="БПТ жойлашган жойини киритинг" value="">
+		                            </div>
+		                        </div>
+								<div class="required field">
+		                            <label>Гувохнома рақами</label>
+									 <input type="text" name="bptgnum" placeholder="Гувохнома рақамини киритинг" value="">
+		                        </div>
+		                        <div class="required field">
+		                            <label>БПТ жойлашган манзил</label>
+		                            <input type="text" name="bptpa" placeholder="БПТ жойлашган манзилини киритинг">
+		                        </div>                        
+		                    </div>
+		                    <div class="three fields">
+		                       <div class="required field">
+		                                <label>БПТ очилган санаси</label>
+		                                <input type="text" name="bptdate" class="date" placeholder="БПТ очилган санаси киритинг">                            
+		                        </div>
+		                    </div>
+		                </div>
+		          		<div class="ui segment ">
+		                    <div class="ui top attached label">
+		                        <p>БПТ раиси умуимй маълумотлари</p> 
+		                    </div>                                  
+		                    <div class="three fields">
+		                        <div class="required field">
+		                            <label>Фамилияси</label>
+		                            <input type="text" name="fname" class="fname" data-form="form-bpt-add" placeholder="Фамилиясини киритинг">
+	                        	</div>
+		                        <div class="required field">
+		                            <label>Исми</label>
+		                            <input type="text" name="mname" placeholder="Исмини киритинг">
+		                        </div>
+		                        <div class="field">
+		                            <label>Отасининг исми</label>
+		                            <input type="text" name="lname" placeholder="Отасининг исмини киритинг">
+		                        </div>
+		                    </div>
+		                    <div class="three fields">
+		                        <div class="required field">
+		                            <label>Жинси</label>
+		                            <div class="inline fields">
+		                                <div class="field">
+		                                    <div class="ui active radio checkbox">
+		                                        <input type="radio" name="sex" id="male" value="1">
+		                                        <label>Эркак <i class="male icon"></i></label>
+		                                    </div>
+		                                </div>
+		                                <div class="field">
+		                                    <div class="ui radio checkbox">
+		                                        <input type="radio" name="sex" id="female" value="2">
+		                                        <label>Аёл <i class="female icon"></i></label>
+		                                    </div>
+		                                </div>                                          
+		                            </div>
+		                        </div>
+		                        <div class="required field">
+		                            <label>Миллати</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="nations">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Миллатини танланг</div>
+		                                <div class="menu">
+			                               {% for nations in nations %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ nations.name }}</div>
+			                               {% endfor %}
+		                               </div>
+		                            </div>
+		                        </div>
+		                        <div class="required field">
+		                            <label>Туғулгна санаси</label>
+		                                <div class="ui input left icon">
+		                                    <i class="calendar icon"></i>
+		                                    <input class="date"  name="tdate" type="text" placeholder="Туғулган санаси киритинг">
+		                                </div>
+		                        </div>
+		                    </div>
+		                    <div class="three fields">
+		                        <div class="required field">
+		                            <label>Паспорт серияси</label>
+		                            <input type="text" name="passr" placeholder="Масалан: AB1234567">
+		                        </div>
+		                        <div class="required field">
+		                            <label>Ким томонидан берилган</label>
+		                            <input type="text" name="paswho" placeholder="Паспорт ким томонидан берилганлигини киритинг">
+		                        </div>
+		                        <div class="required field">
+		                            <label>Берилган вақти</label>
+		                            <div class="ui input left icon">
+		                                <i class="calendar icon"></i>
+		                                <input class="date" name="pasdate" type="text" placeholder="Паспорт берилган вақтини киритинг">
+		                            </div>  
+		                        </div>
+		                    </div>
+		                    <div class="three fields">
+		                        <div class="required field">
+		                            <label>Маълумоти</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="education">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Маълумотини танланг</div>
+		                                <div class="menu">
+			                               {% for educations in educations %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ educations.name }}</div>   
+			                               {% endfor %} 
+		                                </div>
+		                            </div>               
+		                        </div>
+		                        <div class="required field">
+		                            <label>Мутассислиги</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="profession">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Мутассислигини танганг</div>
+		                                <div class="menu">
+			                               {% for professions in professions %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ professions.name }}</div>
+			                               {% endfor %}
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="field">
+		                            <label>Илмий даражаси</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="phd">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Илмий даражасини танланг</div>
+		                                <div class="menu">
+		                                	<div class="item" data-value="0"></div>
+		                               {% for phd in phd %}
+		                                    <div class="item" data-value="{{ loop.index }}">{{ phd.name }}</div>           
+		                               {% endfor %} 
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="ui segment ">
+		                    <div class="ui top attached label">
+		                        <p>Туғулган жойи маълумотлари</p> 
+		                    </div>                              
+		                    <div class="three fields">
+		                        <div class="required field">
+		                            <label>Республика</label>
+		                            <div class="ui selection dropdown res">
+		                                <input type="hidden" name="res" value="" data-form = "form-bpt-add">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Республикасини танланг</div>
+		                                <div class="menu">
+			                               {% for respublics in respublics %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ respublics.name }}</div>
+			                               {% endfor %}
+		                                </div>
+		                            </div>
+		                        </div>
+		                        
+		                        <div class="required field for_uz">
+		                            <label>Вилоят</label>
+		                            <div class="ui selection dropdown">
+		                                <input type="hidden" name="bpr" value="">
+		                                <i class="dropdown icon"></i>
+		                                <div class="default text">Вилоятини танланг</div>
+		                                <div class="menu">
+			                                {% for regions in regions %}
+			                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+			                               	{% endfor %}                               
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="required field for_other">
+		                            <label>Туғулган жойи маълумотлари</label>
+		                            <input type="text" name="bpi" placeholder="Туғулган жойи маълумотларини киритинг">
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="three fields">
+		                    <div class="field">
+		                        <div class="ui segment ">   
+		                            <div class="ui top attached label">
+		                                <p>Партиявий маълумотлари</p> 
+		                            </div>
+		                           <div class="required field">
+		                                <label>Партияга аъзо бўлган санаси</label>
+		                                <div class="ui input left icon">
+		                                    <i class="calendar icon"></i>
+		                                    <input class="date" name="adate" type="text" placeholder="Аъзо бўлган санасини киритинг">
+		                                </div>
+		                            </div>                                                          
+		                            <div class="field">
+		                                <label>Партия билет рақами</label>
+		                                <div class="ui fluid labeled input">
+		                                    <div class="ui label">№</div>
+		                                    <input type="text" name="pnum" placeholder="Масалан: 55555">
+		                                </div>
+		                            </div>                                              
+		                            <div class="field">
+		                                <label>Депутатлиги</label>
+		                                <div class="ui selection dropdown">
+		                                    <input type="hidden" name="dep">
+		                                    <i class="dropdown icon"></i>
+		                                    <div class="default text">Депутатлигини танланг</div>
+		                                    <div class="menu">
+		                                        <div class="item" data-value=""></div>
+		                                        <div class="item" data-value="2">Олий Мажлис депутати</div>
+		                                        <div class="item" data-value="3">Вилоят Кенгаши депутати</div>
+		                                        <div class="item" data-value="4">Туман Кенгаши депутати</div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            <div class="required field ssana">
+		                                <label>Сайланган йили</label>
+		                                <input type="number" name="sdate" min="1995" max="2021" maxlength="4" size="4" placeholder="Масалан: 2020">
+		                            </div>
+		                        </div>
+		                    </div>
+		                    <div class="field">
+		                        <div class="ui segment">    
+		                            <div class="ui top attached label">
+		                                <p>Яшаш манзили маълумотлари</p> 
+		                            </div>
+			                           <div class="required field">
+		                                <label>Вилоят</label>
+		                                <div class="ui selection dropdown">
+		                                    <input type="hidden" name="lpr" value="" data-form="form-bpt-add">
+		                                    <i class="dropdown icon"></i>
+		                                    <div class="default text">Вилоят танганг</div>
+		                                    <div class="menu">
+				                               {% for regions in regions %}
+				                                    <div class="item" data-value="{{ loop.index }}">{{ regions.name }}</div>
+				                               {% endfor %}                                     
+		                                    </div>                                          
+		                                </div>
+		                            </div>
+		                            <div class="required field">
+		                                <label>Туман</label>
+		                                <div class="ui selection dropdown lpd">
+		                                    <input type="hidden" name="lpd">
+		                                    <i class="dropdown icon"></i>
+		                                    <div class="default text">Туман танланг</div>
+		                                    <div class="menu" id="lpd_item">
+				                              
+		                                    </div>                                          
+		                                </div>
+		                            </div>                      
+		                            <div class="field">
+		                                <label>МФЙ/ҚФЙ/ШФЙ</label>
+		                                <input type="text" name="lpmfy" placeholder="МФЙ/ҚФЙ/ШФЙ киритинг">
+		                            </div>      
+		                            <div class="field">
+		                                <label>Яшаш манзили</label>
+		                                <input type="text" name="lpi" placeholder="Яшаш манзилини киритинг">
+		                            </div>                                              
+		                            <div class="field">
+		                                <label>Телефон рақами</label>
+		                                <div class="ui fluid labeled input">
+		                                    <div class="ui label">+998</div>
+		                                    <input type="text" name="tel" placeholder="Телефон рақамини киритинг">
+		                                </div>
+		                            </div>
+		                            <div class="field">
+		                                <label>Электрон почтаси</label>
+		                                <input type="email" name="email" placeholder="Электрон почтани киритинг">
+		                            </div>
+		                        </div>
+		                    </div>
+		                    <div class="field">
+		                        <div class="ui segment" id="workinfo">   
+		                            <div class="ui top attached label">
+		                                <p>Меҳнат фаолияти маълумотлари</p> 
+		                            </div>      
+		                            <div class="required field">
+		                                <label>Фаолият соҳаси</label>
+		                                <div class="ui selection dropdown">
+		                                    <input type="hidden" name="activity" data-form="form-bpt-add">
+		                                    <i class="dropdown icon"></i>   
+		                                    <div class="default text">Фаолият соҳасини танланг</div>
+		                                    <div class="menu">
+				                               {% for activity in activity %}
+				                                    <div class="item" data-value="{{ loop.index }}">{{ activity.name }}</div>
+				                               {% endfor %} 
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            <div class="required field work">
+		                                <label id="worklbl">Иш жойи</label>
+		                                <input type="text" name="work" placeholder="Иш жойини киритинг">
+		                            </div>  
+		                            <div class="required field ll">
+		                                <label>Лавозим даражаси</label>
+		                                <div class="inline fields">
+		                                    <div class="field">
+		                                        <div class="ui radio checkbox">
+		                                            <input type="radio" name="ll" id="worker" value="1">
+		                                            <label>Оддий ходим</label>
+		                                        </div>
+		                                    </div>
+		                                    <div class="field">
+		                                        <div class="ui radio checkbox">
+		                                            <input type="radio" name="ll" id="boss" value="2">
+		                                            <label>Раҳбар</label>
+		                                        </div>
+		                                    </div>  
+		                                </div>                                      
+		                            </div>  
+		                            <div class="required field level">
+		                                <label>Лавозими</label>
+		                                <input type="text" name="level" placeholder="Лавозимини киритинг">
+		                            </div>
+		                            <div class="required field edulevel">
+		                                <label>Босқичи</label>
+		                                <div class="ui selection dropdown">
+		                                    <input type="hidden" name="edulevel" id="ulevel">
+		                                    <i class="dropdown icon"></i>
+		                                    <div class="default text"></div>
+		                                    <div class="menu">
+		                                        <div class="item" data-value="1">1-босқич</div>
+		                                        <div class="item" data-value="2">2-босқич</div>
+		                                        <div class="item" data-value="3">3-босқич</div>
+		                                        <div class="item" data-value="4">4-босқич</div>
+		                                        <div class="item" data-value="5">5-босқич</div>
+		                                        <div class="item" data-value="6">6-босқич</div>
+		                                        <div class="item" data-value="7">7-босқич</div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            <div class="field worktel">
+		                                <label id="worktellbl">Телефон рақами</label>
+		                                <div class="ui fluid labeled input ">
+		                                    <div class="ui label">+998</div>
+		                                    <input type="text" name="worktel" placeholder="Телефон рақамни киритинг">
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="ui error message"></div>
+		            </form>
+		        </div>
+		    </div>
+		    <div class="actions">
+		        <div class="ui deny button">Ёпиш</div>
+		        <div class="ui positive right labeled icon button">Қўшиш<i class="save icon"></i></div>
+		    </div>
+		    <div class="ui inverted dimmer modal_loader">
+			    <div class="ui text loader">Илтимос кутинг...</div>
+			</div>
+		</div>
+		<div class="ui tiny modal" id="bpt-del">
+	    
+	        <i class="red close icon"></i>
+	    
+	        <div class="header"></div>
+	    
+	    	<div class="content">
+	    
+	        	<div class="centered ten wide column">
+	    
+	    	        <form method="post" class="ui form" id="form-delete-bpt">
+	    
+	    	        	<input type="hidden" name="function" value="delbpt">
+	    
+	    	        	<input type="hidden" name="id" id="bptid"> 
+	    
+	    	            <div class="ui divided padded full grid">
+	    
+	    	                <div class="grouped required fields">
+	    
+	    	                    <label>БПТ тугатилиш сабаби</label>
+	    
+	    	                    <div class="field">
+	    
+	    	                        <div class="ui radio checkbox">
+	    
+	    	                            <input type="radio" name="delre" value="1">
+	    
+	    	                            <label>Аъзолари сони 3 тадан камайганда</label>
+	    
+	    	                        </div>
+	    
+	    	                    </div>
+	    
+	    	                    <div class="field">
+	    
+	    	                        <div class="ui radio checkbox">
+	    
+	    	                            <input type="radio" name="delre" value="2">
+	    
+	    	                            <label>Партия фаолиятида иштирок этмаганда</label>                             
+	    
+	    	                        </div>
+	    
+	    	                    </div>
+	    
+	    	                    <div class="field">
+	    
+	    	                        <div class="ui radio checkbox">
+	    
+	    	                            <input type="radio" name="delre"  value="3">
+	    
+	    	                            <label>Жойлашган ташкилоти ўз фаолиятини тугатганда</label>
+	    
+	    	                        </div>
+	    
+	    	                    </div>
+	    
+	    	                    <div class="field">
+	    
+	    	                        <div class="ui radio checkbox">
+	    
+	    	                            <input type="radio" name="delre"  value="4">
+	    
+	    	                            <label>Бошқа сабабга кура</label>
+	    
+	    	                        </div>
+	    
+	    	                    </div>
+	    
+	    	                </div>
+	    
+	    	                <div class="required field">
+	    
+	    	                    <label>БПТ тугатилган сана</label>
+	    
+	    	                    <div class="ui input left icon">
+	    
+	    	                        <i class="calendar icon"></i>
+	    
+	    	                        <input name="ddate" class="adate" type="text" placeholder="БПТ тугатилган санасини киритинг">
+	    
+	    	                    </div>
+	    
+	    	                    <div class="ui info message">						 
+	    							<p>Диққат! Тугатилаётган БПТ аьзолари бошқа БПТ таркибига ўтқазилиши шарт!
+	    							<br>Эслатма! Тугатилаётган БПТ раиси бошқа БПТ таркибига ўтқазилганда аьзо сифатида ўтқазилади!</p>
+	    						</div>
+	    
+	    	                </div>
+	    
+	    			        <div class="required field">
+	    
+	    	                    <label>БПТни танланг</label>
+	    
+	    	                    <div class="ui selection dropdown">
+	    
+	    	                        <input type="hidden" name="newbpt" data-form="form-del-bpt">
+	    
+	    	                        <i class="dropdown icon"></i>   
+	    
+	    	                        <div class="default text">БПТни танланг</div>
+	    
+	    	                        <div class="menu" id="new_bpt">
+	    
+	    	                        </div>
+	    
+	    	                    </div>
+	    
+	    	                </div>
+	    
+	    	            </div>
+	    
+	                   <div class="ui error message"></div>
+	    
+	                </form>
+	    
+	        	</div>
+	    
+	    	</div>
+	    
+	        <div class="actions">
+	    
+	            <div class="ui deny button">Ёпиш</div>
+	    
+	            <div class="ui positive right labeled icon button">Тугатиш<i class="save icon"></i></div>
+	    
+	        </div>
+	    
+	        <div class="ui inverted dimmer modal_loader">
+	    
+	    	    <div class="ui text loader">Илтимос кутинг...</div>
+	    
+	    	</div>
+	    
+	    </div>
+	{% endif %}
+
+	{% if role == 1 %}
+		<div class="ui modal" id="bpt-edit">
+		    <i class="red close icon"></i>
+		    <div class="header">БПТ маьлумотларини тахрирлаш</div>
+		    	<div class="content">
+		        	<div class="centered ten wide column">
+		            	<form class="ui form" method="post" id="form-bpt-edit">
+		            	<input type="hidden" name="function" value="editbpt">
+	        			<input type="hidden" name="id" id="bptid">
+			                    <div class="three fields">                       
+		                            <div class="required field">
+		                                <label>Кенгаш номи</label>
+		                                <input type="text" name="kname" readonly="true" disabled>
+		                            </div>
+			                        <div class="required field">
+			                            <label>БПТ номи</label>
+			                            <input type="text" name="bpt" placeholder="БПТ номини киритинг">
+			                        </div>                        
+			                        <div class="required field">
+			                            <label>БПТ жойлашган ташкилот</label>
+			                            <div class="ui selection dropdown">
+			                                <input type="hidden" name="bptorg">
+			                                <i class="dropdown icon"></i>
+			                                <div class="default text">БПТ жойлашган ташкилот</div>
+			                                <div class="menu">
+				                               {% for bpt_organizations in bpt_organizations %}
+				                                    <div class="item" data-value="{{ loop.index }}">{{ bpt_organizations.name }}</div>
+				                               {% endfor %}
+			                               </div>
+			                            </div>                           
+			                        </div>
+			                    </div>
+			                    <div class="three fields">
+			                     	<div class="required field">
+			                            <label>БПТ жойлашган жойи</label>
+			                            <div class="ui icon input" >
+			                                <input type="text" name="bptpp" placeholder="БПТ жойлашган жойини киритинг" value="">
+			                            </div>
+			                        </div>
+									<div class="required field">
+			                            <label>Гувохнома рақами</label>
+			                            <div class="ui icon input" >
+			                                <input type="text" name="bptgnum" placeholder="Гувохнома рақамини киритинг" value="">
+			                            </div>
+			                        </div>
+			                        <div class="required field">
+			                            <label>БПТ жойлашган манзил</label>
+			                            <input type="text" name="bptpa" placeholder="БПТ жойлашган манзилини киритинг">
+			                        </div>                        
+			                    </div>
+
+			                    <div class="three fields">
+			                       <div class="required field">
+			                            <label>БПТ очилган санаси</label>
+			                            <input type="text" class="date" name="bptdate"  placeholder="БПТ очилган санаси киритинг">
+		                        	</div>
+		                    	</div>
+		                <div class="ui error message"></div>
+					</form>
+				</div>
+			</div>
+			<div class="actions">
+		        <div class="ui deny button">Ёпиш</div>
+		        <div class="ui positive right labeled icon button">Тахрирлаш<i class="save icon"></i></div>
+		    </div>
+		    <div class="ui inverted dimmer modal_loader">
+			    <div class="ui text loader">Илтимос кутинг...</div>
+			</div>
+		</div>
+	
+
+
+
+	<div class="ui tiny modal" id="bpt-change">
+	    <i class="red close icon"></i>
+	    <div class="header">БПТ раисини ўзгартириш</div>
+	    	<div class="content">
+	        	<div class="centered eight wide column">
+	            	<form class="ui form" method="post" id="form-bpt-change">
+	            		<input type="hidden" name="function" value="bptchange">
+	            		<input type="hidden" name="bptid" value="">
+	            		<div class="field">
+	            			<label>Амалдаги раис</label>
+			            	<input type="text" id="rais_fullname" readonly="true">
+	            		</div>
+		            	<div class="required field"> 
+			            	<label>Янги раисни танлаш</label>
+			            	<div class="ui fluid search selection dropdown">
+							  	<input type="hidden" name="newrais" value="">
+							 	<i class="dropdown icon"></i>
+								<div class="default text">Янги раисни танлаш</div>
+							  	<div class="menu" id="azolar_fullname">
+							  	</div>
+							</div>
+						</div>
+						<div class="ui error message"></div>
+					</form>
+				</div>
+			</div>
+			<div class="actions">
+				<div class="ui deny button">Ёпиш</div>
+				<div class="ui positive right labeled icon button" autofocus>Ўзгартириш<i class="save icon"></i></div>
+			</div>
+				<div class="ui inverted dimmer modal_loader">
+				<div class="ui text loader">Илтимос кутинг...</div>
+			</div>
+	</div>
+	{% endif %}
+{% include "footer.html" %}

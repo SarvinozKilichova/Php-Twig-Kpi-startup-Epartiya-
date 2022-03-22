@@ -1,0 +1,5 @@
+    </body>
+    <div class="ui inverted page dimmer" id="body-loader">
+	    <div class="ui text loader">Подождите...</div>
+	</div>
+</html>

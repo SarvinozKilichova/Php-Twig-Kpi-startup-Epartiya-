@@ -1,0 +1,73 @@
+$(function() {
+
+    /* Регистрация поставщиков */
+    $('#form-register').form({
+        fields: {
+            name: 'empty',
+            short_name: 'empty',
+            boss_name: 'empty',
+            boss_type: 'empty',
+            address: 'empty',
+            address_legal: 'empty',
+            contract_number: ['empty', 'number'],
+            contract_date: 'empty',
+            mfo: ['empty', 'number', 'exactLength[5]', 'mfo'],
+            mfo_transit: ['empty', 'number', 'exactLength[5]', 'mfo'],
+            inn: ['empty', 'number'],
+            accno: ['empty', 'number', 'exactLength[20]'],
+            accno_transit: ['empty', 'number', 'exactLength[20]'],
+            epos_merchant_id: ['empty', 'number'],
+            epos_terminal_id: ['empty', 'number'],
+            phone_number: ['empty', 'number', 'exactLength[9]', 'phone_number'],
+            region_code: 'empty'
+        }
+    });
+
+    /* Информация о поставщике */
+    $('#merchant-info').modal({
+        observeChanges: true,
+        duration: 100
+    });
+    $('.button.info').click(function () {
+        $.each($(this).data(), function(k, v) {
+            $('#'+k).html(v);
+        });
+    	$('#merchant-info').modal('show');
+    });
+
+    /* Изменить данные поставщика */
+    $('#form-merchant-update').form({
+        fields: {
+            short_name: ['empty']
+        }
+    });
+    $('#form-merchant-update').ajaxForm({
+        success: function(result) {
+            if (result.success) {
+                alertify.success(result.success);
+                window.location.reload(true);
+            }
+        }
+    });
+    $('#merchant-update').modal({
+        observeChanges: true,
+        duration: 100,
+        onApprove: function() {
+            $('#form-merchant-update').submit();
+            return false;
+        },
+        onDeny: function() {
+            window.location.reload(true);
+        }
+    });
+    $('.button.edit').click(function () {
+        $('#form-merchant-update').find('input[name="merchant_id"]').val($(this).data('service-id'));
+        $('#form-merchant-update').find('input[name="short_name"]').val($(this).data('short-name'));
+        $('#merchant-update').modal('show');
+    });
+
+
+    $('.button.construc').click(function (){
+        alertify.warning('Данный функционал находится в разработке.');
+    });
+});

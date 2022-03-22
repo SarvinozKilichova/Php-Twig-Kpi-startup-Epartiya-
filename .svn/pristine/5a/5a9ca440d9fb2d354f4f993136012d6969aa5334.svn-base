@@ -1,0 +1,118 @@
+{% include "header.html" %}
+{% include "topmenu.html" %}
+
+<div class="main container">
+	<div class="ui grid">
+	    <div class="centered ten wide column">
+			{% include "message.html" %}
+	    	<div class="ui blue segment">
+				<h2 class="ui header">Новый поставщик</h2>
+				<div class="ui divider"></div>
+				<form class="ui form" method="post" id="form-register">
+					<div class="two fields">
+						<div class="required field">
+							<label>Наименование поставщика</label>
+							<input type="text" name="name" placeholder="Наименование поставщика" value="{{ merchant.name ? merchant.name:'' }}">
+						</div>
+						<div class="required field">
+							<label>Коротко наименование (Nickname)</label>
+							<input type="text" name="short_name" placeholder="Коротко наименование (Nickname)" value="{{ merchant.short_name ? merchant.short_name:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>Ф.И.О. руководителя</label>
+							<input type="text" name="boss_name" placeholder="Ф.И.О. руководителя" value="{{ merchant.boss_name ? merchant.boss_name:'' }}">
+						</div>
+						<div class="required field">
+							<label>Должность руководителя</label>
+							<input type="text" name="boss_type" placeholder="Должность руководителя" value="{{ merchant.boss_type ? merchant.boss_type:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>Адрес</label>
+							<input type="text" name="address" placeholder="Адрес" value="{{ merchant.address ? merchant.address:'' }}">
+						</div>
+						<div class="required field">
+							<label>Адрес поставщика</label>
+							<input type="text" name="address_legal" placeholder="Адрес поставщика" value="{{ merchant.address_legal ? merchant.address_legal:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>МФО основного банка поставщика</label>
+							<input type="text" name="mfo" placeholder="МФО основного банка поставщика" value="{{ merchant.mfo ? merchant.mfo:'' }}">
+						</div>
+						<div class="required field">
+							<label>МФО (транзитного счета)</label>
+							<input type="text" name="mfo_transit" placeholder="МФО (транзитного счета)" value="{{ merchant.mfo_transit ? merchant.mfo_transit:'' }}">
+						</div>
+					</div>
+					<div class="three fields">
+						<div class="required field">
+							<label>Номер контракта (уникал код)</label>
+							<input type="text" name="contract_number" placeholder="Номер контракта" value="{{ merchant.contract_number ? merchant.contract_number:'' }}">
+						</div>
+						<div class="required field">
+							<label>Дата контракта</label>
+							<input class="date" type="text" name="contract_date" placeholder="Дата контракта" value="{{ merchant.contract_date ? merchant.contract_date:'' }}">
+						</div>
+						<div class="required field">
+							<label>ИНН</label>
+							<input type="text" name="inn" placeholder="ИНН" value="{{ merchant.inn ? merchant.inn:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>РС / счет основной поставщика</label>
+							<input type="text" name="accno" placeholder="РС / счет основной поставщика" value="{{ merchant.accno ? merchant.accno:'' }}">
+						</div>
+						<div class="required field">
+							<label>РС / счет - транзитный счет</label>
+							<input type="text" name="accno_transit" placeholder="РС / счет - транзитный счет" value="{{ merchant.accno_transit ? merchant.accno_transit:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>EPOS Merchant ID </label>
+							<input type="text" name="epos_merchant_id" placeholder="EPOS Merchant ID" value="{{ merchant.epos_merchant_id ? merchant.epos_merchant_id:'' }}">
+						</div>
+						<div class="required field">
+							<label>EPOS Terminal ID</label>
+							<input type="text" name="epos_terminal_id" placeholder="EPOS Terminal ID" value="{{ merchant.epos_terminal_id ? merchant.epos_terminal_id:'' }}">
+						</div>
+					</div>
+					<div class="two fields">
+						<div class="required field">
+							<label>Номер телефона</label>
+							<div class="ui fluid labeled input">
+								<div class="ui label">+998</div>
+								<input type="text" name="phone_number" placeholder="Номер телефона" value="{{ merchant.phone_number ? merchant.phone_number:'' }}">
+							</div>
+						</div>
+						<div class="required field">
+							<label>Область регистрации поставщика</label>
+							<div class="ui selection dropdown">
+								<input type="hidden" name="region_code" value="{{ merchant.region_code ? merchant.region_code:'' }}">
+								<i class="dropdown icon"></i>
+								<div class="default text">Выберите регион</div>
+								<div class="menu">
+									{% for region in regions %}
+										<div class="item" data-value="{{ region.code }}">{{ region.region }}</div>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<button class="ui right floated blue button" type="submit">Отправить</button>
+					</div>
+					<div class="field"></div>
+				</form>
+			</div>
+	    </div>
+    </div>
+</div>
+
+{% include "footer.html" %}

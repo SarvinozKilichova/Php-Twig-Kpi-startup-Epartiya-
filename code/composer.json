@@ -1,0 +1,5 @@
+{
+    "require": {
+  		"click-llc/click-integration-php":"dev"
+    }
+}

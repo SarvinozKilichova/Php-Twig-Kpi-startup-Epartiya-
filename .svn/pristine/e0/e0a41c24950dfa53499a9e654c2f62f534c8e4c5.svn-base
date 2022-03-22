@@ -1,0 +1,20 @@
+<?php
+
+class Application_Controllers_Login_Module extends Application_Controllers_ModelResource {
+    public function indexAction() {
+        if($this->getRequest()->isPost()) {
+            $user = Application_App::getModel('user');
+            $result = $user->login(
+                $this->getRequest()->getPost('login'),
+                $this->getRequest()->getPost('password')
+            );
+            if ($result['error'] == 0 && $result['success'] == 1) {
+                $this->getSession()->setSeskey($result['sesskey'])->setLogged(1);
+                Application_App::redirect('/');
+            } else {
+                $data['error'] = 'Неверно набран логин или пароль';
+            }
+            return $data;
+        }
+    }
+}
